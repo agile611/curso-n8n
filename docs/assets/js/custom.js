@@ -3,44 +3,48 @@
 
   const modules = [
     {
-      path: "guia-del-curso",
-      title: "Guía del curso"
+      path: "index",
+      title: "Inicio"
     },
     {
-      path: "dia-01-fundamentos",
-      title: "1 · Fundamentos y ciclo de vida"
+      path: "modulo-01-fundamentos",
+      title: "Módulo 1: Fundamentos"
     },
     {
-      path: "dia-02-redes-almacenamiento-compose",
-      title: "2 · Redes, almacenamiento y Compose"
+      path: "modulo-02-primer-workflow",
+      title: "Módulo 2: Primer workflow con n8n"
     },
     {
-      path: "dia-03-seguridad-ci-cd",
-      title: "3 · Seguridad, CI/CD y Supply Chain"
+      path: "modulo-03-eventos-webhooks",
+      title: "Módulo 3: Eventos, webhooks e integraciones"
     },
     {
-      path: "dia-04-orquestacion-produccion",
-      title: "4 · Orquestación y producción"
+      path: "modulo-04-asistentes-dify",
+      title: "Módulo 4: Asistentes y workflows de IA con Dify"
     },
     {
-      path: "dia-05-proyecto-final",
-      title: "5 · Proyecto final integrador"
+      path: "modulo-05-rag-conocimiento",
+      title: "Módulo 5: RAG y bases de conocimiento"
     },
     {
-      path: "proyecto-final",
-      title: "Proyecto final"
+      path: "modulo-06-orquestacion-agentes",
+      title: "Módulo 6: Orquestación de agentes"
     },
     {
-      path: "plantillas",
-      title: "Plantillas"
+      path: "modulo-07-seguridad-gobierno",
+      title: "Módulo 7: Seguridad, gobierno y calidad"
     },
     {
-      path: "recursos",
-      title: "Recursos y referencias"
+      path: "modulo-08-operacion-ciclo-vida",
+      title: "Módulo 8: Operación y ciclo de vida"
+    },
+    {
+      path: "modulo-09-caso-final",
+      title: "Módulo 9: Caso práctico final"
     }
   ];
 
-  const defaultTitle = "Curso Docker Fundamentals";
+  const defaultTitle = "Curso Automatización y agentes sin código";
 
   function getModuleTitle() {
     /*

@@ -1,0 +1,58 @@
+# docker-compose.yml para Curso n8n
+# Uso: docker-compose up -d
+
+version: '3.8'
+
+services:
+  curso-n8n:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: curso-n8n
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - COURSE_NAME=Curso Automatización y agentes sin código
+      - COURSE_VERSION=1.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"\]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - curso-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: curso-n8n-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+    depends_on:
+      - curso-n8n
+    networks:
+      - curso-network
+
+  # Opcional: Certbot para SSL automático
+  certbot:
+    image: certbot/certbot
+    container_name: curso-n8n-certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait \$\${!}; done'"
+
+networks:
+  curso-network:
+    driver: bridge
+
+volumes:
+  certbot-conf:
+  certbot-www:

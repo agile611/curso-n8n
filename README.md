@@ -1,5 +1,4 @@
-# Curso de Prompt Engineering
-
+# Curso de n8n
 Sitio web educativo construido con MkDocs y Material for MkDocs.
 
 ## Preparar el entorno

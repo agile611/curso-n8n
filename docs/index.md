@@ -1,41 +1,120 @@
-# Docker Fundamentals
+# Curso: Automatización y agentes sin código para perfiles técnicos
 
-Formación práctica de cinco jornadas y 30 horas sobre imágenes,
-contenedores, redes, almacenamiento, seguridad y despliegue.
+> **Guión de clase** — Estructura completa con ejemplos prácticos para impartir el curso de 18 horas.
 
-El recorrido combina ejercicios guiados con un proyecto integrador.
-Antes de comenzar, revisa los requisitos del entorno y el programa.
+---
 
-## Preparación
+## Información general
 
-- [Programa y calendario](guia-del-curso/01-programa-calendario.md)
-- [Objetivos de aprendizaje](guia-del-curso/02-objetivos-aprendizaje.md)
-- [Metodología](guia-del-curso/03-metodologia.md)
-- [Preparación y herramientas](guia-del-curso/04-preparacion-herramientas.md)
+| Aspecto | Detalle |
+|---------|---------|
+| **Duración** | 18 horas |
+| **Formato** | Teoría + Laboratorios guiados (n8n + Dify) |
+| **Nivel** | Intermedio técnico |
+| **Herramientas** | n8n (orquestación), Dify (IA/RAG/agentes), Make (alternativa) |
 
-## Recorrido por jornadas
+---
 
-- [Día 1 · Fundamentos y ciclo de vida](dia-01-fundamentos/index.md)
-- [Día 2 · Redes, almacenamiento y Compose](dia-02-redes-almacenamiento-compose/index.md)
-- [Día 3 · Seguridad y CI/CD](dia-03-seguridad-ci-cd/index.md)
-- [Día 4 · Orquestación y producción](dia-04-orquestacion-produccion/index.md)
-- [Día 5 · Proyecto final](dia-05-proyecto-final/00-proyecto-final.md)
+## Objetivos de aprendizaje
 
-## Proyecto final
+Al finalizar el curso, los participantes serán capaces de:
 
-- [Proyecto integrador](proyecto-final/00-proyecto-final.md)
-- [Casos de uso](proyecto-final/01-casos-de-uso.md)
-- [Requisitos y entregables](proyecto-final/02-requisitos-entregables.md)
-- [Presentación](proyecto-final/03-guia-presentacion.md)
+- ✅ **Diseñar, construir y validar** automatizaciones y agentes sin código aplicados a escenarios técnicos corporativos
+- ✅ **Orquestar workflows** con n8n: eventos, webhooks, integraciones vía API
+- ✅ **Crear asistentes, workflows de IA, bases de conocimiento y agentes** con Dify
+- ✅ **Aplicar criterios de seguridad, trazabilidad, validación humana, gestión de credenciales, control de errores y gobierno técnico**
+- ✅ **Pasar de un prototipo a un piloto controlado** con garantías
 
-## Material de apoyo
+---
 
-- [Plantillas](plantillas/index.md)
+## Perfil del participante
 
-## Trabajo seguro
+> **Profesionales técnicos** de IT, sistemas, cloud, ciberseguridad, DevOps, operaciones, arquitectura, datos, soporte o automatización que necesiten incorporar flujos no-code/low-code y agentes de IA a procesos internos.
 
-- Utiliza un entorno de laboratorio.
-- No incluyas contraseñas ni tokens en imágenes o repositorios.
-- Revisa las vulnerabilidades antes de publicar imágenes.
-- Comprueba qué recursos eliminará un comando de limpieza.
-- Documenta cómo construir, ejecutar y comprobar tu aplicación.
+> Especialmente dirigido a personas que **entienden procesos técnicos y sistemas corporativos**, aunque no necesariamente desarrollen software de forma habitual.
+
+---
+
+## Prerrequisitos
+
+- Conocimientos básicos de procesos IT, operación de sistemas o integración de aplicaciones
+- Familiaridad básica con **APIs REST, JSON, webhooks, autenticación mediante tokens**
+- Navegador actualizado y acceso a los entornos de laboratorio (n8n y Dify)
+- Acceso a un modelo de IA o endpoint
+- Conocimientos básicos de **Docker/contenedores** (recomendable para self-hosted)
+- Documentación, datos y casos de laboratorio **ficticios, anonimizados o autorizados**
+- Acceso desde la red del participante a las herramientas y servicios del laboratorio
+
+---
+
+## Estructura del curso (18 horas)
+
+| Módulo | Título | Horas estimadas |
+|--------|--------|-----------------|
+| 1 | Fundamentos de automatización y agentes sin código | 2h |
+| 2 | Primer workflow práctico con n8n | 2h |
+| 3 | Eventos, webhooks e integración con sistemas | 2h |
+| 4 | Asistentes y workflows de IA con Dify | 2h |
+| 5 | RAG y bases de conocimiento para documentación técnica | 2h |
+| 6 | Orquestación de agentes con Dify y n8n | 3h |
+| 7 | Seguridad, gobierno y calidad en automatizaciones con IA | 2h |
+| 8 | Operación, mantenimiento y ciclo de vida | 2h |
+| 9 | Caso práctico final integrado | 3h |
+| **Total** | | **18h** |
+
+---
+
+## Navegación rápida
+
+### Módulos teórico-prácticos
+- [Módulo 1: Fundamentos](modulos/modulo-01-fundamentos.md)
+- [Módulo 2: Primer workflow con n8n](modulos/modulo-02-primer-workflow.md)
+- [Módulo 3: Eventos, webhooks e integraciones](modulos/modulo-03-eventos-webhooks.md)
+- [Módulo 4: Asistentes y workflows de IA con Dify](modulos/modulo-04-asistentes-dify.md)
+- [Módulo 5: RAG y bases de conocimiento](modulos/modulo-05-rag-conocimiento.md)
+- [Módulo 6: Orquestación de agentes](modulos/modulo-06-orquestacion-agentes.md)
+- [Módulo 7: Seguridad, gobierno y calidad](modulos/modulo-07-seguridad-gobierno.md)
+- [Módulo 8: Operación y ciclo de vida](modulos/modulo-08-operacion-ciclo-vida.md)
+- [Módulo 9: Caso práctico final](modulos/modulo-09-caso-final.md)
+
+---
+
+## Metodología
+
+> 🎯 **Cada módulo combina:**
+> - **Conceptos** (15-20 min)
+> - **Demostración en vivo** (10-15 min)
+> - **Laboratorio guiado** (30-45 min)
+> - **Revisión y preguntas** (10 min)
+
+> 💡 **Los laboratorios usan datos ficticios** — Nunca información productiva sensible.
+
+---
+
+## Recursos de apoyo
+
+- 📚 [Documentación oficial n8n](https://docs.n8n.io/)
+- 📚 [Documentación oficial Dify](https://docs.dify.ai/)
+- 🐳 [Docker Hub n8n](https://hub.docker.com/r/n8nio/n8n)
+- 🐳 [Docker Hub Dify](https://hub.docker.com/r/langgenius/dify-api)
+- 💬 Comunidad n8n: [community.n8n.io](https://community.n8n.io/)
+- 💬 Comunidad Dify: [github.com/langgenius/dify/discussions](https://github.com/langgenius/dify/discussions)
+
+---
+
+## Convenciones en este guión
+
+| Símbolo | Significado |
+|---------|-------------|
+| 💡 | **Tip / Buena práctica** para el instructor |
+| ⚠️ | **Punto de atención** / Error común |
+| 🧪 | **Laboratorio** - Actividad práctica |
+| 💬 | **Pregunta de discusión** para la clase |
+| 📝 | **Nota para el instructor** (no leer en voz alta) |
+| 🔗 | **Enlace a recurso externo** |
+| `código` | Código, comandos, JSON, expresiones n8n |
+| **negrita** | Conceptos clave / Términos del glosario |
+
+---
+
+> **¿Listo para empezar?** → [Módulo 1: Fundamentos](modulos/modulo-01-fundamentos.md)

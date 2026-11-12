@@ -1,10 +1,10 @@
-site_name: "Curso Docker Fundamentals"
-site_description: "Curso práctico de Docker - Contenedores, Kubernetes, CI/CD, Seguridad, Observabilidad"
+site_name: "Curso Automatización y agentes sin código"
+site_description: "Curso práctico de Automatización y agentes sin código para perfiles técnicos"
 site_author: "Guillem Hernández Sola"
-site_url: "https://docs.agile611.com/curso-docker/"
+site_url: "https://docs.agile611.com/curso-n8n/"
 
-repo_name: "agile611/curso-docker"
-repo_url: "https://github.com/agile611/curso-docker"
+repo_name: "agile611/curso-n8n"
+repo_url: "https://github.com/agile611/curso-n8n"
 
 docs_dir: "docs"
 site_dir: "site"
@@ -96,70 +96,12 @@ extra_javascript:
 
 nav:
   - "Inicio": index.md
-
-  - "Guía del curso":
-      - "Programa y calendario": guia-del-curso/01-programa-calendario.md
-      - "Objetivos de aprendizaje": guia-del-curso/02-objetivos-aprendizaje.md
-      - "Metodología": guia-del-curso/03-metodologia.md
-      - "Preparación y herramientas": guia-del-curso/04-preparacion-herramientas.md
-
-  - "Temario":
-      - "1 · Fundamentos y ciclo de vida":
-          - dia-01-fundamentos/index.md
-          - "Introducción a contenedores": dia-01-fundamentos/01-introduccion-contenedores.md
-          - "Imágenes, capas y cache": dia-01-fundamentos/02-imagenes-capas-cache.md
-          - "Dockerfile instrucciones": dia-01-fundamentos/03-dockerfile-instrucciones.md
-          - "Taller Dockerfiles": dia-01-fundamentos/04-taller-dockerfiles.md
-          - "Entregable día 1": dia-01-fundamentos/05-entregable-dia1.md
-
-      - "2 · Redes, almacenamiento y Compose":
-          - dia-02-redes-almacenamiento-compose/index.md
-          - "Networking profundo": dia-02-redes-almacenamiento-compose/01-networking-profundo.md
-          - "Almacenamiento persistente": dia-02-redes-almacenamiento-compose/02-almacenamiento-persistente.md
-          - "Compose avanzado": dia-02-redes-almacenamiento-compose/03-compose-avanzado.md
-          - "Laboratorio comparativo": dia-02-redes-almacenamiento-compose/04-laboratorio-comparativo.md
-
-      - "3 · Seguridad, CI/CD y Supply Chain":
-          - dia-03-seguridad-ci-cd/index.md
-          - "Hardening contenedores": dia-03-seguridad-ci-cd/01-hardening-contenedores.md
-          - "Secrets y Supply Chain": dia-03-seguridad-ci-cd/02-secrets-supply-chain.md
-          - "Escaneo y Pipeline": dia-03-seguridad-ci-cd/03-escaneo-pipeline.md
-          - "Laboratorio comparativo": dia-03-seguridad-ci-cd/04-laboratorio-comparativo.md
-          - "Integración final": dia-03-seguridad-ci-cd/05-integracion-final.md
-
-      - "4 · Orquestación y Producción":
-          - dia-04-orquestacion-produccion/index.md
-          - "Swarm y Kubernetes": dia-04-orquestacion-produccion/01-swarm-kubernetes.md
-          - "Recursos Kubernetes": dia-04-orquestacion-produccion/02-kubernetes-recursos.md
-          - "Helm y Observabilidad": dia-04-orquestacion-produccion/03-helm-observabilidad.md
-          - "Laboratorio comparativo": dia-04-orquestacion-produccion/04-laboratorio-comparativo.md
-          - "Integración final": dia-04-orquestacion-produccion/05-integracion-final.md
-
-      - "5 · Proyecto Final Integrador":
-          - dia-05-proyecto-final/00-proyecto-final.md
-
-  - "Proyecto Final":
-      - proyecto-final/00-proyecto-final.md
-      - "Casos de uso": proyecto-final/01-casos-de-uso.md
-      - "Requisitos y entregables": proyecto-final/02-requisitos-entregables.md
-      - "Guía de presentación": proyecto-final/03-guia-presentacion.md
-
-  - "Plantillas":
-      - plantillas/index.md
-      - "00 Instalación Docker Ubuntu 24.04": plantillas/00-instalacion-docker-ubuntu24.md
-      - "01 Dockerfile Base": plantillas/01-dockerfile-base.md
-      - "02 Dockerfile Multi-stage": plantillas/02-dockerfile-multistage.md
-      - "03 Dockerfile Distroless": plantillas/03-dockerfile-distroless.md
-      - "04 Dockerfile Scratch": plantillas/04-dockerfile-scratch.md
-      - "05 Docker Compose Base": plantillas/05-docker-compose-base.md
-      - "06 Docker Compose Override": plantillas/06-docker-compose-override.md
-      - "07 Docker Compose Prod": plantillas/07-docker-compose-prod.md
-      - "08 Docker Compose CI": plantillas/08-docker-compose-ci.md
-      - "09 Dockerignore": plantillas/09-dockerignore.md
-      - "10 Hadolint Config": plantillas/10-hadolint-config.md
-
-  - "Guía del curso":
-      - "Programa y calendario": guia-del-curso/01-programa-calendario.md
-      - "Objetivos de aprendizaje": guia-del-curso/02-objetivos-aprendizaje.md
-      - "Metodología": guia-del-curso/03-metodologia.md
-      - "Preparación y herramientas": guia-del-curso/04-preparacion-herramientas.md
+  - "Módulo 1: Fundamentos": modulos/modulo-01-fundamentos.md
+  - "Módulo 2: Primer workflow con n8n": modulos/modulo-02-primer-workflow.md
+  - "Módulo 3: Eventos, webhooks e integraciones": modulos/modulo-03-eventos-webhooks.md
+  - "Módulo 4: Asistentes y workflows de IA con Dify": modulos/modulo-04-asistentes-dify.md
+  - "Módulo 5: RAG y bases de conocimiento": modulos/modulo-05-rag-conocimiento.md
+  - "Módulo 6: Orquestación de agentes": modulos/modulo-06-orquestacion-agentes.md
+  - "Módulo 7: Seguridad, gobierno y calidad": modulos/modulo-07-seguridad-gobierno.md
+  - "Módulo 8: Operación y ciclo de vida": modulos/modulo-08-operacion-ciclo-vida.md
+  - "Módulo 9: Caso práctico final": modulos/modulo-09-caso-final.md

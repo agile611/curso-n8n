@@ -1,0 +1,296 @@
+# Módulo 1: Fundamentos de automatización y agentes sin código
+
+> **Duración:** 2 horas | **Formato:** Teoría (45 min) + Labs (60 min) + Repaso (15 min)
+
+---
+
+## Objetivos del módulo
+
+Al finalizar, los participantes podrán:
+
+- Diferenciar **automatización determinista** vs **agente con IA** y elegir según el caso
+- Identificar **procesos técnicos candidatos** a automatización en su entorno
+- Entender el **ecosistema de herramientas** (n8n, Dify, Make) y criterios de selección
+- Aplicar **clasificación de riesgo/impacto** para priorizar automatizaciones
+
+---
+
+## 1.1 Conceptos esenciales
+
+### Qué es una automatización no-code/low-code y qué problemas resuelve
+
+> **Definición:** Una **automatización no-code/low-code** es una secuencia de pasos lógicos configurada visualmente (sin escribir código tradicional) que ejecuta tareas repetitivas, integra sistemas o procesa datos entre aplicaciones.
+
+| Problema que resuelve | Ejemplo técnico |
+|----------------------|-----------------|
+| **Tareas repetitivas manuales** | Crear tickets en Jira desde alertas de monitoring |
+| **Integración entre sistemas sin API nativa** | Sincronizar CMDB ↔ Active Directory |
+| **Procesos multi-paso propensos a error humano** | Onboarding de servidor: DNS + monitoring + backup + CMDB |
+| **Cuellos de botella en equipos especializados** | Auto-clasificación de alertas de seguridad Nivel 1 |
+| **Falta de trazabilidad en operaciones ad-hoc** | Registro automático de cambios en Confluence |
+
+> 💡 **Ejemplo para clase:** "Imaginad que cada vez que salta una alerta de disco lleno en vuestro monitoring, alguien tiene que: 1) leer el mail, 2) entrar al servidor, 3) limpiar logs, 4) cerrar la alerta, 5) documentar en Confluence. Eso son 15 min × 20 alertas/semana = 5h/semana automatizables."
+
+### Diferencias entre workflow, integración, bot, asistente y agente
+
+| Concepto | Definición | Ejemplo n8n/Dify | Nivel de autonomía |
+|----------|------------|------------------|-------------------|
+| **Workflow** | Secuencia determinista de pasos predefinidos | n8n: Webhook → HTTP Request → IF → Slack | Bajo (sigue reglas fijas) |
+| **Integración** | Conexión punto-a-punto entre 2 sistemas | n8n: GitLab webhook → Jira create issue | Bajo |
+| **Bot** | Script automatizado que simula acciones de usuario | n8n: Scraper web + API legacy | Bajo-Medio |
+| **Asistente** | IA conversacional especializada en un dominio | Dify: Chat con prompt de sistema + contexto | Medio (responde, no ejecuta) |
+| **Agente** | IA que **planifica, usa herramientas y decide** | Dify Agent: recibe meta → elige tools → ejecuta → valida | Alto (toma decisiones) |
+
+> 💬 **Pregunta de discusión:** "¿Dónde ponéis el límite entre un workflow complejo con muchos IFs y un agente? ¿Es el número de ramas o la capacidad de *elegir* la herramienta?"
+
+### Casos de uso técnicos: ITSM, operaciones cloud, soporte, reporting y ciberseguridad
+
+| Dominio | Caso de uso | Herramienta sugerida | Complejidad |
+|---------|-------------|---------------------|-------------|
+| **ITSM** | Auto-clasificación y enrutamiento de tickets | n8n + Dify (clasificador) | Media |
+| **ITSM** | Creación automática de cambios estandarizados | n8n | Baja |
+| **Cloud Ops** | Auto-remediation: reiniciar servicio, escalar ASG | n8n + AWS CLI / SDK | Media |
+| **Cloud Ops** | Inventario de recursos sin etiquetas (tagging) | n8n (scheduled) | Baja |
+| **Soporte** | Respuesta automática a FAQs con RAG | Dify (RAG) | Media |
+| **Soporte** | Resumen de hilos largos de tickets para escalado | Dify (workflow IA) | Media |
+| **Reporting** | Consolidación diaria de métricas multi-cloud | n8n (scheduled + HTTP) | Media |
+| **Ciberseguridad** | Enriquecimiento de IOCs (VirusTotal, AbuseIPDB) | n8n + APIs externas | Media |
+| **Ciberseguridad** | Análisis de logs sospechosos con IA | Dify Agent (tools: SIEM query) | Alta |
+
+> 🧪 **Ejemplo Lab 1.1:** Cada participante trae **3 procesos reales** de su entorno y los clasifica en la tabla anterior.
+
+### Criterios para elegir entre automatización determinista y agente con IA
+
+> 📝 **Regla práctica para la clase:** "Si podéis escribir el diagrama de flujo en una pizarra con **solo decisiones SÍ/NO**, es determinista → **n8n**. Si necesitáis **'depende del contexto', 'interpreta esto', 'elige la mejor opción'**, es agente → **Dify**."
+
+| Criterio | Automatización determinista (n8n) | Agente con IA (Dify) |
+|----------|-----------------------------------|----------------------|
+| **Lógica** | Reglas explícitas, predecibles | Inferencia, razonamiento, ambigüedad |
+| **Entradas** | Estructuradas, validadas | Naturales, no estructuradas, ruidosas |
+| **Salidas** | Deterministas, verificables | Probabilísticas, requieren validación |
+| **Mantenimiento** | Cambio de reglas = cambio de nodo | Cambio de comportamiento = prompt engineering |
+| **Auditoría** | Fácil: cada paso tiene input/output | Compleja: caja negra, necesita logging extra |
+| **Coste** | Predecible (ejecuciones) | Variable (tokens, modelo, latencia) |
+| **Riesgo** | Controlado (solo hace lo programado) | Emergente (puede alucinar, desviarse) |
+
+> ⚠️ **Punto crítico:** "Nunca uséis un agente para algo que un `IF` resuelve. El coste (tokens, latencia, riesgo) no compensa."
+
+### Riesgos de automatizar procesos mal definidos o sin supervisión
+
+> 📝 **Anti-patrones clásicos para mostrar en clase:**
+
+| Anti-patrón | Síntoma | Consecuencia | Solución |
+|-------------|---------|--------------|----------|
+| **Automatizar el caos** | Proceso sin owner, pasos ambiguos | Automatiza errores más rápido | Documentar + estandarizar **antes** |
+| **Sin humano en el bucle** | Acciones irreversibles (borrar, apagar, deploy) | Incidente mayor silencioso | **Approval gate** obligatorio |
+| **Credenciales hardcodeadas** | Tokens en workflows, sin vault | Fuga de secretos | n8n Credentials / Dify Secrets |
+| **Sin observabilidad** | "Funcionaba ayer, hoy no" | Tiempo de detección = horas | Logs estructurados + alertas |
+| **Dependencia de IA no verificada** | Agente decide acción crítica sin validación | Acción incorrecta en prod | **Validación determinista post-IA** |
+
+---
+
+## 1.2 Herramientas del curso
+
+### Uso de n8n como orquestador visual de workflows e integraciones
+
+> **n8n** = **N**ode-based **8** (workflow) **N** (automation)
+
+| Característica | Detalle |
+|----------------|---------|
+| **Modelo** | Nodos (triggers, actions, logic) conectados visualmente |
+| **Ejecución** | Push (webhook), Pull (polling), Scheduled, Manual |
+| **Datos** | JSON nativo entre nodos, expresiones `{{ $json.field }}` |
+| **Credenciales** | Gestión centralizada (OAuth, API Key, Header Auth, etc.) |
+| **Despliegue** | Cloud (n8n.cloud), Self-hosted (Docker, Kubernetes, npm) |
+| **Extensibilidad** | Nodos personalizados (TypeScript), código inline (Function node) |
+
+> 💡 **Ejemplo visual para clase:** Mostrar workflow: `Webhook → Set (validación) → IF (prioridad) → HTTP Request (API) → Slack/Email`
+
+### Uso de Dify para asistentes, workflows de IA, agentes y conocimiento documental
+
+> **Dify** = **D**evelop **I**ntelligent **F**lows **Y** (plataforma LLMOps)
+
+| Tipo de app | Uso | Cuándo usar |
+|-------------|-----|-------------|
+| **Chat Assistant** | Conversación guiada por prompt de sistema | Soporte L1, FAQ, clasificación inicial |
+| **Agent** | Planifica + usa tools (API, código, búsqueda) | Tareas abiertas: "investiga y propón solución" |
+| **Workflow** | Pasos de IA encadenados (extraer → clasificar → resumir) | Procesamiento documental, pipelines RAG |
+| **Knowledge Base** | RAG: indexar docs → recuperar contexto → responder | Documentación técnica, runbooks, políticas |
+
+> 🔗 **Arquitectura Dify:** `App → Prompt/Workflow → Model Provider (OpenAI, Anthropic, local) → Tools → Knowledge Base`
+
+### Make como alternativa opcional
+
+| Aspecto | n8n | Make (ex-Integromat) |
+|---------|-----|---------------------|
+| **Licencia** | Fair-code (self-hosted gratis) | Propietario (free tier limitado) |
+| **UI** | Nodos + canvas | Escenarios + módulos visuales |
+| **Expresiones** | JavaScript (n8n expressions) | Funciones propias (map, filter, etc.) |
+| **Ejecución** | Propia (queue, workers) | Cloud gestionada |
+| **Comunidad** | Muy activa, open source | Madura, muchos templates |
+| **IA nativa** | Básica (Function node) | Módulos OpenAI, Anthropic integrados |
+
+> 💡 **Recomendación:** "Usad **n8n** para orquestación técnica, self-hosted, control total. **Make** si necesitáis conectores SaaS muy específicos sin mantener infra."
+
+### Criterios de selección en función de despliegue, gobierno, coste, facilidad de uso e integración
+
+| Criterio | n8n | Dify | Make |
+|----------|-----|------|------|
+| **Self-hosted** | ✅ Docker/K8s nativo | ✅ Docker Compose/K8s | ❌ Solo cloud |
+| **Gobierno de datos** | ✅ Control total | ✅ Control total | ⚠️ Datos en su cloud |
+| **Coste fijo** | ✅ Infra propia | ✅ Infra + tokens modelo | ⚠️ Por operaciones |
+| **Curva de aprendizaje** | Media | Media-Baja (UI guiada) | Baja |
+| **Conectores técnicos** | ✅ HTTP genérico, DB, SSH | ⚠️ Via tools/API | ✅ 1000+ SaaS |
+| **IA/RAG nativo** | ❌ (custom) | ✅ Core del producto | ⚠️ Módulos básicos |
+
+> 📝 **Para el instructor:** "En entornos corporativos con requisitos de soberanía de datos → **n8n + Dify self-hosted** es la combinación ganadora."
+
+### Revisión de entornos de laboratorio y datos ficticios autorizados
+
+> 🧪 **Checklist de inicio de clase (5 min):**
+
+```bash
+# Verificar acceso a laboratorios
+curl -s https://n8n.lab.tuempresa.com/healthz   # → "OK"
+curl -s https://dify.lab.tuempresa.com/health   # → {"status":"ok"}
+
+# Verificar credenciales de prueba (proporcionadas por instructor)
+# - n8n: API Key de laboratorio
+# - Dify: API Key de aplicación de prueba
+# - Modelo IA: Endpoint + Key (ej. Azure OpenAI, Ollama local, etc.)
+```
+
+> ⚠️ **Recordatorio:** "Todos los datos de labs son **ficticios**. No uséis credenciales reales, datos de clientes, ni conectéis a sistemas productivos."
+
+---
+
+## 1.3 Prácticas (Labs)
+
+### Lab 1.1 - Identificación de procesos técnicos candidatos a automatización
+
+> **Duración:** 20 min | **Entrega:** Tabla completada (individual o parejas)
+
+#### Instrucciones
+
+1. Listad **5 procesos técnicos** que ejecutáis habitualmente en vuestro equipo
+2. Para cada uno, completad:
+
+| Proceso | Frecuencia | Tiempo manual | Entradas | Salidas | Sistemas involucrados | Dolor actual (1-5) |
+|---------|------------|---------------|----------|---------|----------------------|-------------------|
+| Ej: Onboarding VM | 3/semana | 45 min | Ticket, specs | VM lista, DNS, monitoring | vCenter, Infoblox, Datadog, CMDB | 4 |
+
+#### Criterios de candidatazión (puntuad 1-5)
+
+- [ ] **Repetitivo** (se hace igual cada vez)
+- [ ] **Basado en reglas** (decisiones SÍ/NO claras)
+- [ ] **Multi-sistema** (requiere saltar entre herramientas)
+- [ ] **Propenso a error** (olvidan pasos, typos)
+- [ ] **Alto volumen** (>2/semana)
+- [ ] **Bajo riesgo** (reversible, no crítico)
+
+> 💡 **Puntuación ≥ 20/30** = Buen candidato para Módulo 2
+
+#### Ejemplo resuelto (para instructor)
+
+| Proceso | Frec. | Tiempo | Entradas | Salidas | Sistemas | Dolor | Repet. | Reglas | Multi-sist. | Error | Volumen | Riesgo | **Total** |
+|---------|-------|--------|----------|---------|----------|-------|--------|--------|-------------|-------|---------|--------|-----------|
+| Onboarding VM | 3/sem | 45 min | Ticket + specs | VM + DNS + Mon + CMDB | 4 | 4 | 5 | 5 | 5 | 4 | 3 | 2 | **24** ✅ |
+| Análisis forense | 1/mes | 4h | Alertas SIEM | Informe | 3 | 5 | 2 | 2 | 3 | 3 | 1 | 5 | **16** ❌ |
+
+---
+
+### Lab 1.2 - Diseño del mapa de entrada, procesamiento, decisión y salida de un workflow
+
+> **Duración:** 25 min | **Entrega:** Diagrama en papel/pizarra digital (Miro, Excalidraw, draw.io)
+
+#### Plantilla de mapa de workflow
+
+```
+┌─────────────┐     ┌──────────────────┐     ┌─────────────┐     ┌─────────────┐
+│   ENTRADA   │────▶│  PROCESAMIENTO   │────▶│  DECISIÓN   │────▶│   SALIDA    │
+│  (Trigger)  │     │  (Transformar,   │     │  (IF/Switch)│     │  (Acción,   │
+│             │     │   Enriquecer,    │     │             │     │   Notificar,│
+│             │     │   Validar)       │     │             │     │   Registrar)│
+└─────────────┘     └──────────────────┘     └─────────────┘     └─────────────┘
+       │                    │                      │                    │
+   Webhook              Set/Function           IF / Switch           HTTP Request
+   Schedule             HTTP Request           (condiciones)       Slack/Email
+   Manual               Code                   (expresiones)       DB/Notion
+```
+
+#### Ejercicio: Diseñad el mapa para **"Clasificación y enrutamiento de alerta de monitoring"**
+
+**Entrada:** Webhook JSON de Prometheus Alertmanager
+```json
+{
+  "alertname": "DiskSpaceCritical",
+  "instance": "prod-web-01",
+  "severity": "critical",
+  "value": "95%",
+  "mountpoint": "/var/log"
+}
+```
+
+**Procesamiento:**
+1. Validar campos obligatorios (`alertname`, `instance`, `severity`)
+2. Enriquecer: consultar CMDB por `instance` → obtener `owner_team`, `environment`
+3. Normalizar `severity` a escala interna (P1-P4)
+
+**Decisión:**
+- SI `severity == critical` Y `environment == prod` → **P1** → Escalado inmediato (PagerDuty)
+- SI `severity == warning` → **P3** → Ticket Jira + Slack al equipo
+- SINO → **P4** → Log only
+
+**Salida:**
+- P1: POST PagerDuty + Slack #critical-alerts + Audit log
+- P3: POST Jira + Slack #team-alerts + Audit log
+- P4: Insert DB audit + Metric increment
+
+> 💬 **Discusión en clase:** "¿Qué pasa si CMDB no responde? ¿Qué si `instance` no existe en CMDB? → **Rutas de error/fallback** (Módulo 3)"
+
+---
+
+### Lab 1.3 - Clasificación de casos de uso según riesgo, impacto y nivel de intervención humana
+
+> **Duración:** 15 min | **Formato:** Matriz de decisión grupal
+
+#### Matriz de clasificación (Riesgo × Impacto × Intervención)
+
+| Caso de uso | Riesgo (1-5) | Impacto negocio (1-5) | Intervención humana | Clasificación | Aprobación requerida |
+|-------------|--------------|----------------------|---------------------|---------------|---------------------|
+| Auto-reiniciar servicio fallido | 3 | 4 | Ninguna (auto) | **Alto riesgo** | ❌ No (pero logging + alerta) |
+| Crear ticket Jira desde alerta | 1 | 2 | Ninguna (auto) | **Bajo riesgo** | ❌ No |
+| Apagar instancia EC2 "zombie" | 5 | 5 | **Obligatoria** | **Crítico** | ✅ Sí (approval gate) |
+| Clasificar ticket con IA | 2 | 3 | Revisión opcional | **Medio** | ⚠️ Human-in-loop |
+| Desplegar hotfix a prod | 5 | 5 | **Obligatoria** | **Crítico** | ✅ Sí (change advisory) |
+| Enriquecer alerta con CMDB | 1 | 2 | Ninguna | **Bajo** | ❌ No |
+| Responder cliente con IA (RAG) | 3 | 4 | **Obligatoria** | **Alto** | ✅ Sí (supervisión) |
+
+#### Reglas de decisión para la clase
+
+| Nivel | Intervención humana | Ejemplos |
+|-------|---------------------|----------|
+| **Nivel 0 - Full Auto** | Ninguna | Logging, notificaciones, enriquecimiento, tickets informativos |
+| **Nivel 1 - Human-in-the-loop** | Revisión *post-ejecución* (auditoría) | Clasificación IA, enriquecimiento, resúmenes |
+| **Nivel 2 - Human-on-the-loop** | Aprobación *pre-ejecución* (approval gate) | Acciones modificativas: reiniciar, escalar, crear recursos |
+| **Nivel 3 - Human-in-command** | Decisión humana, IA solo asiste | Cambios en prod, seguridad, borrado de datos |
+
+> ⚠️ **Regla de oro:** "Todo lo que **modifica estado** (create/update/delete) en sistemas críticos → **Nivel 2 o 3**. Solo lectura/enriquecimiento/notificación → **Nivel 0/1**."
+
+---
+
+## Resumen del Módulo 1
+
+| Concepto clave | Takeaway |
+|----------------|----------|
+| **No-code ≠ No-logic** | La lógica existe, se expresa visualmente |
+| **Determinista vs Agente** | Reglas fijas → n8n. Ambigüedad/contexto → Dify |
+| **Riesgo primero** | Clasificad **antes** de construir |
+| **Datos ficticios** | Laboratorios seguros = aprendizaje real sin miedo |
+| **Mapa I-P-D-S** | Entrada → Procesamiento → Decisión → Salida (siempre) |
+
+---
+
+## 🔗 Siguiente: [Módulo 2: Primer workflow práctico con n8n](modulo-02-primer-workflow.md)
+
+> **Preparad:** Acceso a n8n lab, credenciales de prueba, el mapa del Lab 1.2 listo para implementar.
