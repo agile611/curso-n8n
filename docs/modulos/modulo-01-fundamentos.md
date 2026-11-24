@@ -143,7 +143,7 @@ Al finalizar, los participantes podrán:
 | **Conectores técnicos** | ✅ HTTP genérico, DB, SSH | ⚠️ Via tools/API | ✅ 1000+ SaaS |
 | **IA/RAG nativo** | ❌ (custom) | ✅ Core del producto | ⚠️ Módulos básicos |
 
-> 📝 **Para el instructor:** "En entornos corporativos con requisitos de soberanía de datos → **n8n + Dify self-hosted** es la combinación ganadora."
+> � **Nota:** "En entornos corporativos con requisitos de soberanía de datos → **n8n + Dify self-hosted** es la combinación ganadora."
 
 ### Revisión de entornos de laboratorio y datos ficticios autorizados
 
@@ -154,7 +154,7 @@ Al finalizar, los participantes podrán:
 curl -s https://n8n.lab.tuempresa.com/healthz   # → "OK"
 curl -s https://dify.lab.tuempresa.com/health   # → {"status":"ok"}
 
-# Verificar credenciales de prueba (proporcionadas por instructor)
+# Verificar credenciales de prueba (proporcionadas para el lab)
 # - n8n: API Key de laboratorio
 # - Dify: API Key de aplicación de prueba
 # - Modelo IA: Endpoint + Key (ej. Azure OpenAI, Ollama local, etc.)
@@ -190,7 +190,7 @@ curl -s https://dify.lab.tuempresa.com/health   # → {"status":"ok"}
 
 > 💡 **Puntuación ≥ 20/30** = Buen candidato para Módulo 2
 
-#### Ejemplo resuelto (para instructor)
+#### Ejemplo resuelto
 
 | Proceso | Frec. | Tiempo | Entradas | Salidas | Sistemas | Dolor | Repet. | Reglas | Multi-sist. | Error | Volumen | Riesgo | **Total** |
 |---------|-------|--------|----------|---------|----------|-------|--------|--------|-------------|-------|---------|--------|-----------|

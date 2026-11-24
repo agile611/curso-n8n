@@ -514,7 +514,7 @@ Cada participante escribe 3 acciones concretas para los próximos 30 días:
 | **Dify App/Workflow export** | `app.yaml` / `workflow.dsl.yaml` | Git repo / Shared drive | Fin de clase |
 | **Handoff Package** | Carpeta `handoff/` completa | Git repo | +1 semana |
 | **Test Suite** | `test-cases.json` + resultados | Git repo | +1 semana |
-| **Action Items Personales** | Documento 1-página | Entregar a instructor | Fin de clase |
+| **Action Items Personales** | Documento 1-página | Entregar al facilitador | Fin de clase |
 | **Feedback Curso** | Formulario anónimo | Link proporcionado | +3 días |
 
 ---

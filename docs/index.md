@@ -106,11 +106,11 @@ Al finalizar el curso, los participantes serán capaces de:
 
 | Símbolo | Significado |
 |---------|-------------|
-| 💡 | **Tip / Buena práctica** para el instructor |
+| 💡 | **Tip / Buena práctica** |
 | ⚠️ | **Punto de atención** / Error común |
 | 🧪 | **Laboratorio** - Actividad práctica |
-| 💬 | **Pregunta de discusión** para la clase |
-| 📝 | **Nota para el instructor** (no leer en voz alta) |
+| 💬 | **Pregunta de discusión** |
+| 📝 | **Nota importante** |
 | 🔗 | **Enlace a recurso externo** |
 | `código` | Código, comandos, JSON, expresiones n8n |
 | **negrita** | Conceptos clave / Términos del glosario |

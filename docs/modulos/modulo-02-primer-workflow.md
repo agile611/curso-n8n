@@ -276,7 +276,7 @@ IF "Es crítica?"          ──▶ Input: output del Set. Evalúa {{ $json.is_
 
 > **Escenario Lab 2.1:** Procesar solicitud técnica estructurada (ej. "Crear usuario en AD")
 
-#### Paso a paso (para instructor - demo en vivo)
+#### Paso a paso (demo en vivo)
 
 **1. RECEPCIÓN - Webhook Trigger (producción) / Manual Trigger (lab)**
 ```json
@@ -408,7 +408,7 @@ Switch on: {{ $json.request_type }}
 - [ ] Notificación Slack llega al canal de lab
 - [ ] Nodos nombrados según convención, con notas explicativas
 
-#### Estructura esperada (para instructor)
+#### Estructura esperada
 
 ```
 Manual Trigger
@@ -465,7 +465,7 @@ Slack - Notify Result
 // False → Continue directly
 ```
 
-> 📝 **Nota instructor:** "El nodo `Wait` en n8n permite pausar ejecución hasta webhook externo. Simulad aprobación con un 2º Manual Trigger o webhook.site."
+> � **Nota:** "El nodo `Wait` en n8n permite pausar ejecución hasta webhook externo. Usad un 2º Manual Trigger o webhook.site para simular la aprobación."
 
 ---
 
@@ -475,7 +475,7 @@ Slack - Notify Result
 
 #### Ejercicio: "Caza de bugs"
 
-El instructor proporciona un workflow **roto** (exportado `.json`) con estos errores intencionados:
+Se proporciona un workflow **roto** (exportado `.json`) con estos errores intencionados:
 
 | Bug # | Error | Síntoma | Cómo detectar |
 |-------|-------|---------|---------------|
