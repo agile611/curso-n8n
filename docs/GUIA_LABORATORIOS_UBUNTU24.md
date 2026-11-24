@@ -24,9 +24,13 @@ lsb_release -a
 docker --version
 # Docker version 27.x.x, build xxx
 
-# Docker Compose
-docker compose version
-# Docker Compose version v2.x.x
+# Docker Compose (usa docker-compose v1 o docker compose v2)
+docker-compose version
+# Docker Compose version v2.x.x  (o v1.x.x si tienes el binario clásico)
+
+# Si solo tienes 'docker' pero no 'docker-compose', instala el plugin v2:
+# sudo apt-get update && sudo apt-get install -y docker-compose-plugin
+# Luego usa: docker compose version
 
 # Recursos
 free -h
@@ -75,10 +79,10 @@ ls -la docker-compose.lab.yml init-multiple-dbs.sh nginx.lab.conf
 chmod +x init-multiple-dbs.sh
 
 # Levantar todos los servicios
-docker compose -f docker-compose.lab.yml --env-file .env.lab up -d
+docker-compose -f docker-compose.lab.yml --env-file .env.lab up -d
 
 # Verificar estado (esperar 2-3 min para healthy)
-watch docker compose -f docker-compose.lab.yml ps
+watch docker-compose -f docker-compose.lab.yml ps
 # Todos deben mostrar: Up (healthy) o Up
 ```
 
@@ -399,29 +403,29 @@ curl -X POST http://192.168.1.100:5678/webhook/approval/<EXECUTION_ID> \
 
 ```bash
 # n8n
-docker compose -f ~/curso-n8n/docker-compose.lab.yml logs -f n8n
+docker-compose -f ~/curso-n8n/docker-compose.lab.yml logs -f n8n
 
 # Dify API
-docker compose -f ~/curso-n8n/docker-compose.lab.yml logs -f dify-api
+docker-compose -f ~/curso-n8n/docker-compose.lab.yml logs -f dify-api
 
 # Dify Worker
-docker compose -f ~/curso-n8n/docker-compose.lab.yml logs -f dify-worker
+docker-compose -f ~/curso-n8n/docker-compose.lab.yml logs -f dify-worker
 
 # Todos
-docker compose -f ~/curso-n8n/docker-compose.lab.yml logs -f
+docker-compose -f ~/curso-n8n/docker-compose.lab.yml logs -f
 ```
 
 ### 5.2 Reiniciar Servicios
 
 ```bash
 # Solo n8n
-docker compose -f ~/curso-n8n/docker-compose.lab.yml restart n8n
+docker-compose -f ~/curso-n8n/docker-compose.lab.yml restart n8n
 
 # Solo Dify
-docker compose -f ~/curso-n8n/docker-compose.lab.yml restart dify-api dify-worker
+docker-compose -f ~/curso-n8n/docker-compose.lab.yml restart dify-api dify-worker
 
 # Todo el stack
-docker compose -f ~/curso-n8n/docker-compose.lab.yml restart
+docker-compose -f ~/curso-n8n/docker-compose.lab.yml restart
 ```
 
 ### 5.3 Backup Workflows n8n
@@ -446,7 +450,7 @@ curl -X GET http://192.168.1.100:5678/api/v1/workflows \
 
 ```bash
 cd ~/curso-n8n
-docker compose -f docker-compose.lab.yml down -v
+docker-compose -f docker-compose.lab.yml down -v
 # -v elimina volúmenes (postgres_data, redis_data, n8n_data, dify_storage)
 docker volume prune -f
 docker image prune -f
@@ -458,13 +462,13 @@ docker image prune -f
 
 | Síntoma | Comando Diagnóstico | Solución |
 |---------|---------------------|----------|
-| n8n no carga | `docker compose logs n8n \| tail -50` | Esperar postgres healthy, verificar N8N_ENCRYPTION_KEY (32+ chars) |
-| Dify "Database connection failed" | `docker compose logs postgres` | Verificar POSTGRES_PASSWORD coincide en .env y init script |
+| n8n no carga | `docker-compose logs n8n \| tail -50` | Esperar postgres healthy, verificar N8N_ENCRYPTION_KEY (32+ chars) |
+| Dify "Database connection failed" | `docker-compose logs postgres` | Verificar POSTGRES_PASSWORD coincide en .env y init script |
 | Webhook 404 | Verificar workflow **Active** en n8n | Toggle Active → Save |
-| Dify "Model provider error" | `docker compose logs dify-api \| grep -i model` | Verificar API Key / Ollama corriendo en puerto 11434 |
+| Dify "Model provider error" | `docker-compose logs dify-api \| grep -i model` | Verificar API Key / Ollama corriendo en puerto 11434 |
 | Out of Memory | `free -h` / `docker stats` | Añadir swap 4GB: `sudo fallocate -l 4G /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile` |
 | Puerto ocupado | `sudo lsof -i :5678` | Matar proceso o cambiar puerto en docker-compose |
-| Certificados SSL | `docker compose logs certbot` | Verificar dominio apunta a IP, puertos 80/443 abiertos |
+| Certificados SSL | `docker-compose logs certbot` | Verificar dominio apunta a IP, puertos 80/443 abiertos |
 
 ---
 

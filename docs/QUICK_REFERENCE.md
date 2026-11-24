@@ -21,24 +21,24 @@
 ```bash
 # Levantar stack
 cd ~/curso-n8n
-docker compose -f docker-compose.lab.yml --env-file .env.lab up -d
+docker-compose -f docker-compose.lab.yml --env-file .env.lab up -d
 
 # Ver estado
-docker compose -f docker-compose.lab.yml ps
+docker-compose -f docker-compose.lab.yml ps
 
 # Logs tiempo real
-docker compose -f docker-compose.lab.yml logs -f n8n
-docker compose -f docker-compose.lab.yml logs -f dify-api
+docker-compose -f docker-compose.lab.yml logs -f n8n
+docker-compose -f docker-compose.lab.yml logs -f dify-api
 
 # Reiniciar servicio
-docker compose -f docker-compose.lab.yml restart n8n
+docker-compose -f docker-compose.lab.yml restart n8n
 
 # Backup workflows n8n
 curl -H "Authorization: Basic $(echo -n 'admin:n8n_lab_2026' | base64)" \
   http://192.168.1.100:5678/api/v1/workflows > backup-$(date +%Y%m%d).json
 
 # Limpiar todo
-docker compose -f docker-compose.lab.yml down -v
+docker-compose -f docker-compose.lab.yml down -v
 ```
 
 ---
