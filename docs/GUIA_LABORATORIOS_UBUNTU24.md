@@ -92,7 +92,7 @@ watch docker-compose -f docker-compose.lab.yml ps
 # Desde tu navegador LOCAL (no en el servidor)
 # Documentación: http://192.168.1.100:8001
 # n8n: http://192.168.1.100:5678
-# Dify: http://192.168.1.100:8000
+# Dify: http://192.168.1.100:8080
 
 # Test rápido via curl desde el servidor
 curl -s http://localhost:5678/healthz   # n8n
@@ -162,7 +162,7 @@ curl -X POST http://192.168.1.100:5678/webhook/cmdb \
 
 ### 2.1 Primer Acceso y Registro
 
-1. Abrir `http://192.168.1.100:8000`
+1. Abrir `http://192.168.1.100:8080`
 2. Registrar usuario admin (email, password)
 3. Completar setup inicial de workspace
 
@@ -356,13 +356,13 @@ curl -X POST http://192.168.1.100:5678/webhook/alertas/monitoring \
    - Start node: inputs `alert_json`, `cmdb_data`
    - LLM node: Clasificar + Recomendar (output JSON schema)
    - End node: Output estructurado
-   - Publish → Obtener **Workflow Run URL**: `http://192.168.1.100:8000/v1/workflows/run`
+   - Publish → Obtener **Workflow Run URL**: `http://192.168.1.100:8080/v1/workflows/run`
 
 2. **En n8n**: Workflow `Lab 6.1 - n8n to Dify`
    - Webhook Trigger: `/alert-processor`
    - HTTP Request → CMDB Mock
    - **HTTP Request → Dify Workflow**:
-     - URL: `http://192.168.1.100:8000/v1/workflows/run`
+     - URL: `http://192.168.1.100:8080/v1/workflows/run`
      - Method: POST
      - Headers: `Authorization: Bearer app-xxxxxxxxxxxxx` (API Key Dify), `Content-Type: application/json`
      - Body:
@@ -480,8 +480,8 @@ docker image prune -f
 | **n8n UI** | http://192.168.1.100:5678 | admin / n8n_lab_2026 |
 | **n8n Webhook Base** | http://192.168.1.100:5678/webhook/ | - |
 | **n8n API** | http://192.168.1.100:5678/api/v1/ | Basic Auth admin:n8n_lab_2026 |
-| **Dify UI** | http://192.168.1.100:8000 | Tu registro |
-| **Dify API** | http://192.168.1.100:8000/v1/ | Bearer <APP_API_KEY> |
+| **Dify UI** | http://192.168.1.100:8080 | Tu registro |
+| **Dify API** | http://192.168.1.100:8080/v1/ | Bearer <APP_API_KEY> |
 | **CMDB Mock** | http://192.168.1.100:5678/webhook/cmdb | - |
 | **Ollama (si usado)** | http://192.168.1.100:11434 | - |
 | **httpbin.org** | https://httpbin.org | - |

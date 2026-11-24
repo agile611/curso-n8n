@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Base de datos compartida
   postgres:
@@ -105,10 +103,10 @@ services:
       
       # Config
       SECRET_KEY: "${DIFY_SECRET_KEY:-dify_secret_key_32_chars_minimo!!}"
-      CONSOLE_API_URL: "http://192.168.1.100:8000"
-      CONSOLE_WEB_URL: "http://192.168.1.100:8000"
-      SERVICE_API_URL: "http://192.168.1.100:8000/v1"
-      FILES_URL: "http://192.168.1.100:8000/v1/files"
+      CONSOLE_API_URL: "http://192.168.1.100:8080"
+      CONSOLE_WEB_URL: "http://192.168.1.100:8080"
+      SERVICE_API_URL: "http://192.168.1.100:8080/v1"
+      FILES_URL: "http://192.168.1.100:8080/v1/files"
       
       # Storage (local para lab)
       STORAGE_TYPE: "local"
@@ -131,10 +129,10 @@ services:
   dify-web:
     image: langgenius/dify-web:latest
     environment:
-      CONSOLE_API_URL: "http://192.168.1.100:8000"
-      CONSOLE_WEB_URL: "http://192.168.1.100:8000"
+      CONSOLE_API_URL: "http://192.168.1.100:8080"
+      CONSOLE_WEB_URL: "http://192.168.1.100:8080"
     ports:
-      - "8000:80"
+      - "8080:80"
     depends_on:
       - dify-api
     networks:

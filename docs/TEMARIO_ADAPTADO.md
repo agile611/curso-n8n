@@ -62,7 +62,7 @@ docker-compose -f docker-compose.lab.yml ps
 # 6. Acceder a interfaces (desde navegador LOCAL del alumno)
 # - Documentación del curso: http://192.168.1.100:8001
 # - n8n: http://192.168.1.100:5678
-# - Dify: http://192.168.1.100:8000
+# - Dify: http://192.168.1.100:8080
 ```
 
 ### docker-compose.lab.yml (Crear en raíz del repo)
@@ -175,10 +175,10 @@ services:
       
       # Config
       SECRET_KEY: "${DIFY_SECRET_KEY:-dify_secret_key_32_chars_minimo!!}"
-      CONSOLE_API_URL: "http://192.168.1.100:8000"
-      CONSOLE_WEB_URL: "http://192.168.1.100:8000"
-      SERVICE_API_URL: "http://192.168.1.100:8000/v1"
-      FILES_URL: "http://192.168.1.100:8000/v1/files"
+      CONSOLE_API_URL: "http://192.168.1.100:8080"
+      CONSOLE_WEB_URL: "http://192.168.1.100:8080"
+      SERVICE_API_URL: "http://192.168.1.100:8080/v1"
+      FILES_URL: "http://192.168.1.100:8080/v1/files"
       
       # Storage (local para lab)
       STORAGE_TYPE: "local"
@@ -201,8 +201,8 @@ services:
   dify-web:
     image: langgenius/dify-web:latest
     environment:
-      CONSOLE_API_URL: "http://192.168.1.100:8000"
-      CONSOLE_WEB_URL: "http://192.168.1.100:8000"
+      CONSOLE_API_URL: "http://192.168.1.100:8080"
+      CONSOLE_WEB_URL: "http://192.168.1.100:8080"
     ports:
       - "8000:80"
     depends_on:
@@ -445,7 +445,7 @@ http {
 
 | Lab Original | Adaptación Ubuntu 20.04 |
 |--------------|-------------------------|
-| **Lab 4.1** Asistente técnico clasificar incidencias | **Acceso Dify**: `http://192.168.1.100:8000`<br>**Setup inicial**: Registrar usuario admin → Crear App tipo "Chat Assistant"<br>**Model Provider**: Configurar en Settings → Model Provider (OpenAI / Azure / Ollama local) |
+| **Lab 4.1** Asistente técnico clasificar incidencias | **Acceso Dify**: `http://192.168.1.100:8080`<br>**Setup inicial**: Registrar usuario admin → Crear App tipo "Chat Assistant"<br>**Model Provider**: Configurar en Settings → Model Provider (OpenAI / Azure / Ollama local) |
 | **Lab 4.2** Prompts con objetivo/contexto/restricciones | **System Prompt**: Copiar plantilla del módulo 4<br>**Variables**: Definir en Start node: `alert_json`, `cmdb_data`, `runbook_summary` |
 | **Lab 4.3** Comparar resultados | **Testing**: Usar "Debug & Preview" panel en Dify<br>**Documentar**: Capturas de pantalla + tabla comparativa en doc compartido |
 
@@ -491,7 +491,7 @@ http {
 
 | Lab Original | Adaptación Ubuntu 24.04 |
 |--------------|-------------------------|
-| **Lab 6.1** Conectar n8n ↔ Dify | **Dify Workflow API**: `http://192.168.1.100:8000/v1/workflows/run`<br>**Auth**: Header `Authorization: Bearer <DIFY_APP_API_KEY>`<br>**n8n HTTP Request**: POST a Dify con JSON input → Parse output JSON |
+| **Lab 6.1** Conectar n8n ↔ Dify | **Dify Workflow API**: `http://192.168.1.100:8080/v1/workflows/run`<br>**Auth**: Header `Authorization: Bearer <DIFY_APP_API_KEY>`<br>**n8n HTTP Request**: POST a Dify con JSON input → Parse output JSON |
 | **Lab 6.2** Automatización clasifica + propone acción | **Dify Agent**: Crear Agent con tools (HTTP Request a n8n webhook)<br>**n8n**: Workflow "Executor" que recibe action_type + params → ejecuta acción real |
 | **Lab 6.3** Aprobación humana antes de ejecutar | **n8n Wait Node**: Webhook URL `http://192.168.1.100:5678/webhook/approval/<execution_id>`<br>**Simular aprobación**: `curl -X POST http://192.168.1.100:5678/webhook/approval/abc123 -d '{"approved":true}'` |
 
@@ -528,7 +528,7 @@ http {
 
 | Lab Original | Adaptación Ubuntu 24.04 |
 |--------------|-------------------------|
-| **Lab 9.1** Prototipo integrado Dify + n8n | **Arquitectura completa**: Ver diagrama en módulo 9<br>**Componentes**:<br>1. n8n Webhook: `http://192.168.1.100:5678/webhook/alert-processor`<br>2. n8n Enrichment: CMDB mock + Deployment mock<br>3. Dify Workflow: `http://192.168.1.100:8000/v1/workflows/run`<br>4. n8n Decision/Execution: IF → Actions → Approval → Audit<br>5. Notificaciones: Slack webhook.site |
+| **Lab 9.1** Prototipo integrado Dify + n8n | **Arquitectura completa**: Ver diagrama en módulo 9<br>**Componentes**:<br>1. n8n Webhook: `http://192.168.1.100:5678/webhook/alert-processor`<br>2. n8n Enrichment: CMDB mock + Deployment mock<br>3. Dify Workflow: `http://192.168.1.100:8080/v1/workflows/run`<br>4. n8n Decision/Execution: IF → Actions → Approval → Audit<br>5. Notificaciones: Slack webhook.site |
 | **Lab 9.2** Validar, presentar riesgos, siguientes pasos | **Test cases**:<br>- Alerta P1 crítica prod → Escalado PagerDuty<br>- Alerta P3 warning → Ticket Jira<br>- Alerta ruido → Auto-close + log<br>- Fallo Dify → Fallback n8n (ticket genérico)<br>- Fallo n8n action → Alert on-call<br>**Presentación**: 5 min por grupo + 5 min Q&A |
 
 ---
@@ -550,7 +550,7 @@ http {
 - [ ] Execution mode: Queue (Redis) configurado
 
 ### Dify
-- [ ] Acceso UI: `http://192.168.1.100:8000` (registro admin inicial)
+- [ ] Acceso UI: `http://192.168.1.100:8080` (registro admin inicial)
 - [ ] Model Provider configurado (OpenAI / Azure / Ollama)
 - [ ] App de prueba "Lab Classifier" creada y funcional
 - [ ] Knowledge Base de prueba creada con docs del curso
@@ -620,9 +620,9 @@ docker-compose -f docker-compose.lab.yml down -v
 |----------|-----|--------------|
 | **Documentación Curso** | http://192.168.1.100:8001 | Pública |
 | **n8n** | http://192.168.1.100:5678 | admin / n8n_lab_2026 |
-| **Dify** | http://192.168.1.100:8000 | Registro inicial |
+| **Dify** | http://192.168.1.100:8080 | Registro inicial |
 | **n8n Webhook Base** | http://192.168.1.100:5678/webhook/ | - |
-| **Dify API Base** | http://192.168.1.100:8000/v1/ | Bearer <APP_API_KEY> |
+| **Dify API Base** | http://192.168.1.100:8080/v1/ | Bearer <APP_API_KEY> |
 | **Mock HTTPBin** | https://httpbin.org | - |
 | **Mock Webhook.site** | https://webhook.site | - |
 
