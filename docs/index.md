@@ -43,9 +43,11 @@ docker-compose -f docker-compose.lab.yml ps
 |----------|-----|--------------|
 | **Documentación del curso** | `http://<IP_DEL_SERVIDOR>:8001` | Pública |
 | **n8n** | `http://<IP_DEL_SERVIDOR>:5678` | `admin` / `n8n_lab_2026` |
-| **Dify: 8080` | Registro inicial |
+| **Dify** | `http://<IP_DEL_SERVIDOR>:8080` | `admin@lab.local` / `dify_lab_2026` |
 
 > ⚠️ Sustituye `<IP_DEL_SERVIDOR>` por la IP real de tu máquina de laboratorio (ej. `192.168.1.100`).
+
+> 🔔 **Dify primera vez**: Al abrir `http://<IP_DEL_SERVIDOR>:8080` verás *"Dify has not been initialized..."*. **Es normal** → Completa el [Setup Wizard](GUIA_LABORATORIOS_UBUNTU24.md#06-dify-configuración-inicial-obligatoria-setup-wizard) (crear admin, workspace, skip model provider si no tienes API Key).
 
 ---
 

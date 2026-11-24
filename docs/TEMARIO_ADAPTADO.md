@@ -61,8 +61,10 @@ docker-compose -f docker-compose.lab.yml ps
 
 # 6. Acceder a interfaces (desde navegador LOCAL del alumno)
 # - Documentación del curso: http://192.168.1.100:8001
-# - n8n: http://192.168.1.100:5678
-# - Dify: http://192.168.1.100:8080
+# - n8n: http://192.168.1.100:5678 (admin / n8n_lab_2026)
+# - Dify: http://192.168.1.100:8080 (admin@lab.local / dify_lab_2026)
+
+> ⚠️ **Dify primera vez**: Al abrir `http://192.168.1.100:8080` verás *"Dify has not been initialized..."*. **Es normal** → Completa el Setup Wizard (crear admin, workspace, skip model provider si no tienes API Key). Ver [Guía Laboratorios §0.6](../GUIA_LABORATORIOS_UBUNTU24.md#06-dify-configuración-inicial-obligatoria-setup-wizard)
 ```
 
 ### docker-compose.lab.yml (Crear en raíz del repo)

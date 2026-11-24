@@ -10,9 +10,11 @@
 |----------|-----|--------------|
 | **Docs Curso** | `http://192.168.1.100:8001` | Pública |
 | **n8n** | `http://192.168.1.100:5678` | `admin` / `n8n_lab_2026` |
-| **Dify** | `http://192.168.1.100:8080` | Tu registro |
+| **Dify** | `http://192.168.1.100:8080` | `admin@lab.local` / `dify_lab_2026` |
 | **n8n Webhooks** | `http://192.168.1.100:5678/webhook/` | - |
 | **Dify API** | `http://192.168.1.100:8080/v1/` | `Bearer <APP_API_KEY>` |
+
+> ⚠️ **Dify primera vez**: Al abrir `http://<IP>:8080` verás "Dify has not been initialized". Es normal → Completa el Setup Wizard (ver [Guía Laboratorios §0.6](GUIA_LABORATORIOS_UBUNTU24.md#06-dify-configuración-inicial-obligatoria-setup-wizard))
 
 ---
 

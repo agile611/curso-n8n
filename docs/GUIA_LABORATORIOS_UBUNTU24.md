@@ -100,6 +100,53 @@ curl -s http://localhost:8080/v1/health    # Dify API
 curl -s http://localhost:8001/          # Docs
 ```
 
+### 0.6 ⚠️ Dify: Configuración Inicial Obligatoria (Setup Wizard)
+
+> **IMPORTANTE**: Al acceder por primera vez a `http://<IP_DEL_SERVIDOR>:8080` (o `http://<IP_DEL_SERVIDOR>/dify/`), verás una página de error con el mensaje:
+> > "Dify has not been initialized and installed yet. Please proceed with the initialization and installation process first."
+>
+> **Esto es NORMAL y ESPERADO**. Dify requiere un asistente de configuración inicial (Setup Wizard) la primera vez que se ejecuta.
+
+#### Pasos del Setup Wizard (ejecutar UNA sola vez):
+
+1. **Abrir en navegador**: `http://<IP_DEL_SERVIDOR>:8080`
+2. **Click "Get Started"**
+3. **Crear cuenta administrador**:
+   - Email: `admin@lab.local` (o tu email)
+   - Password: `dify_lab_2026`
+   - Nombre: `Lab Admin`
+4. **Configurar Workspace**:
+   - Nombre: `Curso n8n Lab`
+5. **Proveedor de Modelo (Opcional - se puede hacer después en Módulo 4)**:
+   - Si tienes API Key de OpenAI/Azure → Configurar ahora
+   - Si NO tienes → Click **"Skip"** (configurarás Ollama local en Módulo 4)
+6. **Click "Finish"** → Acceso al Dashboard de Dify
+
+> 💡 **Tip**: El setup solo se hace **una vez**. Después tendrás acceso completo al dashboard de Dify.
+
+#### Credenciales de Laboratorio Dify (para referencia):
+
+| Campo | Valor |
+|-------|-------|
+| **URL** | `http://<IP_DEL_SERVIDOR>:8080` (o `/dify/` via nginx) |
+| **Email admin** | `admin@lab.local` |
+| **Password admin** | `dify_lab_2026` |
+| **Workspace** | `Curso n8n Lab` |
+
+#### Verificar que Dify está listo:
+
+```bash
+# Test API health (debe devolver JSON, no HTML)
+curl -s http://localhost:8080/v1/health
+
+# Test via nginx proxy
+curl -s http://localhost/dify/ | grep -c '__next_error__' && echo "Setup pendiente" || echo "Dify OK"
+```
+
+---
+
+## 1. Configuración Inicial n8n (Módulo 2)
+
 ---
 
 ## 1. Configuración Inicial n8n (Módulo 2)
