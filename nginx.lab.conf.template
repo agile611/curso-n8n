@@ -1,0 +1,106 @@
+events {
+    worker_connections 1024;
+}
+
+http {
+    upstream n8n_backend {
+        server n8n:5678;
+    }
+    
+    upstream dify_backend {
+        server dify-web:3000;
+    }
+    
+    upstream docs_backend {
+        server docs:8001;
+    }
+
+    server {
+        listen 80;
+        server_name ${LAB_HOST};
+
+        # Root: redirect to documentation
+        location = / {
+            return 302 /docs/;
+        }
+
+        # n8n (proxy at /n8n/ - n8n runs at root path internally)
+        location /n8n/ {
+            proxy_pass http://n8n_backend/;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-Prefix /n8n;
+            proxy_read_timeout 300s;
+            proxy_send_timeout 300s;
+            
+            # Handle n8n redirects to keep them under /n8n/
+            proxy_redirect http://$host/ /n8n/;
+            proxy_redirect http://$host:5678/ /n8n/;
+        }
+
+        # Dify
+        location /dify/ {
+            proxy_pass http://dify_backend/;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-Prefix /dify;
+        }
+
+        # Dify install/setup wizard (redirects from / to /install)
+        location /install {
+            proxy_pass http://dify_backend/install;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-Prefix /dify;
+        }
+
+        # Dify Console API (browser calls from Dify web UI)
+        location /console/api/ {
+            proxy_pass http://dify-api:5001/console/api/;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Host $host;
+        }
+
+        # Documentación
+        location /docs/ {
+            proxy_pass http://docs_backend/;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-Prefix /docs;
+        }
+
+        # Health check
+        location /health {
+            return 200 "healthy\n";
+            add_header Content-Type text/plain;
+        }
+    }
+}

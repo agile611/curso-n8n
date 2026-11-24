@@ -35,11 +35,11 @@ services:
   n8n:
     image: n8nio/n8n:latest
     environment:
-      # Base config
-      N8N_HOST: "192.168.1.100"
+      # Base config - usa LAB_HOST del .env.lab
+      N8N_HOST: "${LAB_HOST:-130.117.95.60}"
       N8N_PORT: "5678"
       N8N_PROTOCOL: "http"
-      WEBHOOK_URL: "http://192.168.1.100:5678/"
+      WEBHOOK_URL: "http://${LAB_HOST:-130.117.95.60}:5678/"
       GENERIC_TIMEZONE: "Europe/Madrid"
       
       # Database
@@ -105,12 +105,11 @@ services:
       
       # Config
       SECRET_KEY: "${DIFY_SECRET_KEY:-dify_secret_key_32_chars_minimo!!}"
-      # API URL: use Docker service name for intra-container communication
-      # In production, replace with your public domain/IP
-      CONSOLE_API_URL: "http://dify-api:5001"
-      CONSOLE_WEB_URL: "http://192.168.1.100:8080"
-      SERVICE_API_URL: "http://192.168.1.100:8080/v1"
-      FILES_URL: "http://192.168.1.100:8080/v1/files"
+      # API URL: usa LAB_HOST del .env.lab para acceso desde navegador
+      CONSOLE_API_URL: "http://${LAB_HOST:-130.117.95.60}:8080"
+      CONSOLE_WEB_URL: "http://${LAB_HOST:-130.117.95.60}:8080"
+      SERVICE_API_URL: "http://${LAB_HOST:-130.117.95.60}:8080/v1"
+      FILES_URL: "http://${LAB_HOST:-130.117.95.60}:8080/v1/files"
       
       # Storage (local para lab)
       STORAGE_TYPE: "local"
@@ -133,9 +132,9 @@ services:
   dify-web:
     image: langgenius/dify-web:latest
     environment:
-      # API URL: public URL accessible from browser (via nginx proxy)
-      CONSOLE_API_URL: "http://192.168.1.100:8080"
-      CONSOLE_WEB_URL: "http://192.168.1.100:8080"
+      # API URL: usa LAB_HOST del .env.lab para acceso desde navegador
+      CONSOLE_API_URL: "http://${LAB_HOST:-130.117.95.60}:8080"
+      CONSOLE_WEB_URL: "http://${LAB_HOST:-130.117.95.60}:8080"
     ports:
       - "8080:3000"
     depends_on:
@@ -189,13 +188,15 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx.lab.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx.lab.conf.template:/etc/nginx/nginx.conf.template:ro
+      - ./envsubst.sh:/docker-entrypoint.sh:ro
     depends_on:
       - n8n
       - dify-web
       - docs
     networks:
       - lab_net
+    entrypoint: ["/docker-entrypoint.sh", "envsubst", "/etc/nginx/nginx.conf.template"]
 
 volumes:
   postgres_data:
