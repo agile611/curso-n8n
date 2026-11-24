@@ -136,7 +136,7 @@ services:
       CONSOLE_API_URL: "http://${LAB_HOST:-130.117.95.60}:8080"
       CONSOLE_WEB_URL: "http://${LAB_HOST:-130.117.95.60}:8080"
       # Increase Node.js memory limit to prevent OOM
-      NODE_OPTIONS: "--max-old-space-size=3072"
+      NODE_OPTIONS: "--max-old-space-size=4096"
     ports:
       - "8080:3000"
     depends_on:
@@ -146,7 +146,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 4G
+          memory: 5G
         reservations:
           memory: 2G
 
