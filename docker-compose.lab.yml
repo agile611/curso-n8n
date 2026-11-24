@@ -136,7 +136,7 @@ services:
       CONSOLE_API_URL: "http://${LAB_HOST:-130.117.95.60}:8080"
       CONSOLE_WEB_URL: "http://${LAB_HOST:-130.117.95.60}:8080"
       # Increase Node.js memory limit to prevent OOM
-      NODE_OPTIONS: "--max-old-space-size=4096"
+      NODE_OPTIONS: "--max-old-space-size=6144"
     ports:
       - "8080:3000"
     depends_on:
@@ -146,9 +146,9 @@ services:
     deploy:
       resources:
         limits:
-          memory: 5G
+          memory: 8G
         reservations:
-          memory: 2G
+          memory: 3G
 
   dify-worker:
     image: langgenius/dify-api:latest
