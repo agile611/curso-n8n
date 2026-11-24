@@ -133,8 +133,8 @@ services:
   dify-web:
     image: langgenius/dify-web:latest
     environment:
-      # API URL: use Docker service name for intra-container communication
-      CONSOLE_API_URL: "http://dify-api:5001"
+      # API URL: public URL accessible from browser (via nginx proxy)
+      CONSOLE_API_URL: "http://192.168.1.100:8080"
       CONSOLE_WEB_URL: "http://192.168.1.100:8080"
     ports:
       - "8080:3000"
