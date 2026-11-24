@@ -133,7 +133,8 @@ services:
     image: langgenius/dify-web:latest
     environment:
       # API URL: usa LAB_HOST del .env.lab para acceso desde navegador
-      CONSOLE_API_URL: "http://${LAB_HOST:-130.117.95.60}:8080"
+      # IMPORTANTE: CONSOLE_API_URL debe apuntar al proxy nginx (puerto 80) para que /console/api/ vaya al API
+      CONSOLE_API_URL: "http://${LAB_HOST:-130.117.95.60}"
       CONSOLE_WEB_URL: "http://${LAB_HOST:-130.117.95.60}:8080"
       # Increase Node.js memory limit to prevent OOM
       NODE_OPTIONS: "--max-old-space-size=6144"
