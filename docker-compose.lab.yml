@@ -61,6 +61,8 @@ services:
       N8N_BASIC_AUTH_USER: "admin"
       N8N_BASIC_AUTH_PASSWORD: "${N8N_BASIC_AUTH_PASSWORD:-n8n_lab_2026}"
       N8N_ENCRYPTION_KEY: "${N8N_ENCRYPTION_KEY:-clave_secreta_32_chars_minimo!!}"
+      # HTTP mode (lab): disable secure cookie requirement
+      N8N_SECURE_COOKIE: "false"
       
       # Limits
       N8N_PAYLOAD_SIZE_MAX: "16"
