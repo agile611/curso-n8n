@@ -96,7 +96,7 @@ watch docker-compose -f docker-compose.lab.yml ps
 
 # Test rápido via curl desde el servidor
 curl -s http://localhost:5678/healthz   # n8n
-curl -s http://localhost:8000/health    # Dify
+curl -s http://localhost:8080/v1/health    # Dify API
 curl -s http://localhost:8001/          # Docs
 ```
 

@@ -33,7 +33,7 @@
 | **Acceso** | SSH: `ssh curso@192.168.1.100` |
 | **Usuario** | `curso` (sudo sin password configurado) |
 | **Docker** | Docker Engine + Docker Compose Plugin |
-| **Puertos expuestos** | 22 (SSH), 80/443 (nginx), 5678 (n8n), 8000 (Dify), 8001 (MkDocs docs) |
+| **Puertos expuestos** | 22 (SSH), 80/443 (nginx), 5678 (n8n), 8080 (Dify), 8001 (MkDocs docs) |
 | **IP ejemplo docs** | `192.168.1.100` (sustituir por IP real del lab) |
 
 ### Preparación Previa (Ejecutar ANTES del curso)
@@ -204,7 +204,7 @@ services:
       CONSOLE_API_URL: "http://192.168.1.100:8080"
       CONSOLE_WEB_URL: "http://192.168.1.100:8080"
     ports:
-      - "8000:80"
+      - "8080:3000"
     depends_on:
       - dify-api
     networks:
@@ -538,7 +538,7 @@ http {
 ### Infraestructura
 - [ ] Servidor Ubuntu 24.04 accesible por SSH (`curso@192.168.1.100`)
 - [ ] Docker + Docker Compose instalados y funcionando
-- [ ] Puertos 5678, 8000, 8001 abiertos en firewall
+- [ ] Puertos 5678, 8080, 8001 abiertos en firewall
 - [ ] `docker-compose.lab.yml` + `init-multiple-dbs.sh` + `nginx.lab.conf` en repo
 - [ ] Stack levantado: `docker-compose -f docker-compose.lab.yml up -d`
 - [ ] Todos los contenedores "healthy" (`docker-compose ps`)
@@ -610,7 +610,7 @@ docker-compose -f docker-compose.lab.yml down -v
 | Webhook n8n 404 | Workflow no activo | Activar workflow (toggle "Active") + Save |
 | Dify "Model provider error" | API Key inválida / quota | Verificar key / usar Ollama local |
 | Out of memory (OOM) | RAM insuficiente | Aumentar swap: `sudo fallocate -l 4G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile` |
-| Puertos ocupados | Otro servicio en 5678/8000 | `sudo lsof -i :5678` → matar proceso |
+| Puertos ocupados | Otro servicio en 5678/8080 | `sudo lsof -i :5678` → matar proceso |
 
 ---
 

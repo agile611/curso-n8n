@@ -43,7 +43,7 @@ docker-compose -f docker-compose.lab.yml ps
 |----------|-----|--------------|
 | **Documentación del curso** | `http://<IP_DEL_SERVIDOR>:8001` | Pública |
 | **n8n** | `http://<IP_DEL_SERVIDOR>:5678` | `admin` / `n8n_lab_2026` |
-| **Dify** | `http://<IP_DEL_SERVIDOR>:8000` | Registro inicial |
+| **Dify: 8080` | Registro inicial |
 
 > ⚠️ Sustituye `<IP_DEL_SERVIDOR>` por la IP real de tu máquina de laboratorio (ej. `192.168.1.100`).
 
