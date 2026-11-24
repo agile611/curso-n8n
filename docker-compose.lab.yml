@@ -105,7 +105,9 @@ services:
       
       # Config
       SECRET_KEY: "${DIFY_SECRET_KEY:-dify_secret_key_32_chars_minimo!!}"
-      CONSOLE_API_URL: "http://192.168.1.100:8080"
+      # API URL: use Docker service name for intra-container communication
+      # In production, replace with your public domain/IP
+      CONSOLE_API_URL: "http://dify-api:5001"
       CONSOLE_WEB_URL: "http://192.168.1.100:8080"
       SERVICE_API_URL: "http://192.168.1.100:8080/v1"
       FILES_URL: "http://192.168.1.100:8080/v1/files"
