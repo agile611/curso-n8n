@@ -108,11 +108,11 @@
 
 | Documento | Ubicación | Descripción |
 |-----------|-----------|-------------|
-| **Guía Laboratorios Ubuntu 24.04** | `docs/GUIA_LABORATORIOS_UBUNTU24.md` | Setup completo paso a paso: SSH, docker-compose, n8n/Dify config, datos prueba, comandos por módulo, troubleshooting |
-| **Temario Adaptado** | `docs/TEMARIO_ADAPTADO.md` | Correspondencia 1:1 temario original (18h) ↔ 9 módulos + labs adaptados para Ubuntu 24.04 |
-| **Referencia Rápida** | `docs/QUICK_REFERENCE.md` | Hoja de chuleta: URLs, comandos Docker, expresiones n8n, Dify prompts, seguridad, testing, entregables |
-| **Plantilla Documentación Workflow** | `docs/WORKFLOW_DOC_TEMPLATE.md` | Estándar para documentar cada workflow: arquitectura, contratos I/O, dependencias, métricas, runbook, Go/No-Go |
-| **Política Seguridad Mínima** | `docs/SECURITY_POLICY_TEMPLATE.md` | Checklist seguridad: credenciales, validación I/O, prompt injection, sanitización logs, approval gates, fases prototipo→piloto→prod |
+| **Guía Laboratorios Ubuntu 24.04** | `docs/guia_laboratorios_ubuntu24.md` | Setup completo paso a paso: SSH, docker-compose, n8n/Dify config, datos prueba, comandos por módulo, troubleshooting |
+| **Temario Adaptado** | `docs/temario_adaptado.md` | Correspondencia 1:1 temario original (18h) ↔ 9 módulos + labs adaptados para Ubuntu 24.04 |
+| **Referencia Rápida** | `docs/quick_reference.md` | Hoja de chuleta: URLs, comandos Docker, expresiones n8n, Dify prompts, seguridad, testing, entregables |
+| **Plantilla Documentación Workflow** | `docs/workflow_doc_template.md` | Estándar para documentar cada workflow: arquitectura, contratos I/O, dependencias, métricas, runbook, Go/No-Go |
+| **Política Seguridad Mínima** | `docs/security_policy_template.md` | Checklist seguridad: credenciales, validación I/O, prompt injection, sanitización logs, approval gates, fases prototipo→piloto→prod |
 | **Guía Despliegue** | `docs/deploy.md` | Despliegue nativo/Docker en Ubuntu 24.04 (systemd, nginx, certbot, firewall) |
 
 ---

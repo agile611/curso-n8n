@@ -6,15 +6,15 @@
 
 ## 🚀 Primer paso: Preparar el entorno de laboratorio
 
-**Antes de empezar el Módulo 1**, necesitas el entorno funcionando en la máquina Ubuntu 24.04 del laboratorio.
+**Antes de empezar el Módulo 1**, necesitas el entorno funcionando en la máquina Ubuntu 24.04 del laboratorio (IP real: `130.117.95.60`).
 
-> 📖 **Guía completa**: [Guía Laboratorios Ubuntu 24.04](GUIA_LABORATORIOS_UBUNTU24.md#0-preparación-del-entorno-pre-curso)
+> 📖 **Guía completa**: [Guía Laboratorios Ubuntu 24.04](guia_laboratorios_ubuntu24.md#0-preparación-del-entorno-pre-curso)
 
 ### Resumen rápido (ejecutar en el servidor de lab)
 
 ```bash
 # 1. Conectar al servidor Ubuntu 24.04
-ssh curso@<IP_DEL_SERVIDOR>
+ssh curso@130.117.95.60
 
 # 2. Clonar repositorio y preparar variables
 cd ~
@@ -22,6 +22,7 @@ git clone https://github.com/agile611/curso-n8n.git
 cd curso-n8n
 
 cat > .env.lab << 'EOF'
+LAB_HOST=130.117.95.60
 POSTGRES_PASSWORD=n8n_lab_2026
 REDIS_PASSWORD=redis_lab_2026
 N8N_BASIC_AUTH_PASSWORD=n8n_lab_2026
@@ -30,7 +31,7 @@ DIFY_SECRET_KEY=dify_secret_key_32_chars_minimo!!
 EOF
 
 # 3. Levantar stack completo (n8n + Dify + PostgreSQL + Redis + Docs)
-chmod +x init-multiple-dbs.sh
+chmod +x init-multiple-dbs.sh envsubst.sh
 docker-compose -f docker-compose.lab.yml --env-file .env.lab up -d
 
 # 4. Verificar que todo está "healthy" (2-3 min)
@@ -41,13 +42,13 @@ docker-compose -f docker-compose.lab.yml ps
 
 | Servicio | URL | Credenciales |
 |----------|-----|--------------|
-| **Documentación del curso** | `http://<IP_DEL_SERVIDOR>:8001` | Pública |
-| **n8n** | `http://<IP_DEL_SERVIDOR>:5678` | `admin` / `n8n_lab_2026` |
-| **Dify** | `http://<IP_DEL_SERVIDOR>:8080` | `admin@lab.local` / `dify_lab_2026` |
+| **Documentación del curso** | `http://130.117.95.60/docs/` | Pública |
+| **n8n** | `http://130.117.95.60/n8n/` | `admin` / `n8n_lab_2026` |
+| **Dify** | `http://130.117.95.60/dify/` | `admin@lab.local` / `dify_lab_2026` |
 
-> ⚠️ Sustituye `<IP_DEL_SERVIDOR>` por la IP real de tu máquina de laboratorio (ej. `192.168.1.100`).
+> 🔔 **Dify primera vez**: Al abrir `http://130.117.95.60/dify/` verás *"Dify has not been initialized..."*. **Es normal** → Completa el [Setup Wizard](guia_laboratorios_ubuntu24.md#06-dify-configuración-inicial-obligatoria-setup-wizard) (crear admin, workspace, skip model provider si no tienes API Key).
 
-> 🔔 **Dify primera vez**: Al abrir `http://<IP_DEL_SERVIDOR>:8080` verás *"Dify has not been initialized..."*. **Es normal** → Completa el [Setup Wizard](GUIA_LABORATORIOS_UBUNTU24.md#06-dify-configuración-inicial-obligatoria-setup-wizard) (crear admin, workspace, skip model provider si no tienes API Key).
+> 🔧 **Fixes ya aplicados**: n8n secure cookie, PostgreSQL idempotente, Dify OOM, API URL via nginx, static assets, setup wizard, IP dinámica con LAB_HOST. Ver [Guía Laboratorios §0.7](guia_laboratorios_ubuntu24.md#07-fixes-aplicados-troubleshooting-común).
 
 ---
 
@@ -125,12 +126,12 @@ Al finalizar el curso, los participantes serán capaces de:
 - [Módulo 9: Caso práctico final](modulos/modulo-09-caso-final.md)
 
 ### Documentación de apoyo
-- [Guía Laboratorios Ubuntu 24.04](GUIA_LABORATORIOS_UBUNTU24.md) - Setup completo, comandos, troubleshooting
-- [Temario Adaptado](TEMARIO_ADAPTADO.md) - Correspondencia temario original ↔ módulos
-- [Plantilla Documentación Workflow](WORKFLOW_DOC_TEMPLATE.md) - Estándar para documentar workflows
-- [Política Seguridad Mínima](SECURITY_POLICY_TEMPLATE.md) - Checklist seguridad prototipo → piloto
+- [Guía Laboratorios Ubuntu 24.04](guia_laboratorios_ubuntu24.md) - Setup completo, comandos, troubleshooting
+- [Temario Adaptado](temario_adaptado.md) - Correspondencia temario original ↔ módulos
+- [Plantilla Documentación Workflow](workflow_doc_template.md) - Estándar para documentar workflows
+- [Política Seguridad Mínima](security_policy_template.md) - Checklist seguridad prototipo → piloto
 - [Guía Despliegue](deploy.md) - Despliegue nativo/Docker en Ubuntu 24.04
-- [Referencia Rápida](QUICK_REFERENCE.md) - Hoja de chuleta: URLs, comandos, expresiones
+- [Referencia Rápida](quick_reference.md) - Hoja de chuleta: URLs, comandos, expresiones
 - [Recursos y referencias](recursos.md) - Enlaces curados: docs oficiales, comunidades, certificaciones, lecturas, plantillas del curso
 
 ---

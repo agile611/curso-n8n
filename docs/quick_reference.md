@@ -1,6 +1,6 @@
 # Quick Reference Card - Curso n8n + Dify
 
-> **Entorno Lab**: Ubuntu 24.04 | **IP**: `192.168.1.100` (ejemplo - usar IP real)
+> **Entorno Lab**: Ubuntu 24.04 | **IP real**: `130.117.95.60` | **IP ejemplo**: `192.168.1.100`
 
 ---
 
@@ -8,13 +8,13 @@
 
 | Servicio | URL | Credenciales |
 |----------|-----|--------------|
-| **Docs Curso** | `http://192.168.1.100:8001` | Pública |
-| **n8n** | `http://192.168.1.100:5678` | `admin` / `n8n_lab_2026` |
-| **Dify** | `http://192.168.1.100:8080` | `admin@lab.local` / `dify_lab_2026` |
-| **n8n Webhooks** | `http://192.168.1.100:5678/webhook/` | - |
-| **Dify API** | `http://192.168.1.100:8080/v1/` | `Bearer <APP_API_KEY>` |
+| **Docs Curso** | `http://130.117.95.60/docs/` | Pública |
+| **n8n** | `http://130.117.95.60/n8n/` | `admin` / `n8n_lab_2026` |
+| **Dify** | `http://130.117.95.60/dify/` | `admin@lab.local` / `dify_lab_2026` |
+| **n8n Webhooks** | `http://130.117.95.60/n8n/webhook/` | - |
+| **Dify API** | `http://130.117.95.60/console/api/` | `Bearer <APP_API_KEY>` |
 
-> ⚠️ **Dify primera vez**: Al abrir `http://<IP>:8080` verás "Dify has not been initialized". Es normal → Completa el Setup Wizard (ver [Guía Laboratorios §0.6](GUIA_LABORATORIOS_UBUNTU24.md#06-dify-configuración-inicial-obligatoria-setup-wizard))
+> ⚠️ **Dify primera vez**: Al abrir `http://130.117.95.60/dify/` verás "Dify has not been initialized". Es normal → Completa el Setup Wizard en `/dify/install` (ver [Guía Laboratorios §0.6](guia_laboratorios_ubuntu24.md#06-dify-configuración-inicial-obligatoria-setup-wizard))
 
 ---
 
@@ -37,11 +37,30 @@ docker-compose -f docker-compose.lab.yml restart n8n
 
 # Backup workflows n8n
 curl -H "Authorization: Basic $(echo -n 'admin:n8n_lab_2026' | base64)" \
-  http://192.168.1.100:5678/api/v1/workflows > backup-$(date +%Y%m%d).json
+  http://130.117.95.60:5678/api/v1/workflows > backup-$(date +%Y%m%d).json
 
 # Limpiar todo
 docker-compose -f docker-compose.lab.yml down -v
 ```
+
+---
+
+## 🔧 Fixes Aplicados (Troubleshooting Rápido)
+
+| Problema | Solución Aplicada |
+|----------|-------------------|
+| n8n: "secure cookie" error | `N8N_SECURE_COOKIE=false` |
+| PostgreSQL: "role already exists" | Script `init-multiple-dbs.sh` idempotente |
+| Dify web: OOM | `NODE_OPTIONS=--max-old-space-size=6144` + 8G limit |
+| Dify API: "ERR_NAME_NOT_RESOLVED" | `CONSOLE_API_URL` via nginx proxy (puerto 80) |
+| Static assets 404 (`/_next/...`) | Nginx `/_next/` y `/logo/` → `dify-web:3000` |
+| Setup wizard 404 | Nginx `/install` → `dify-web:3000/install` |
+| IP hardcodeada | Variable `LAB_HOST` en `.env.lab` + `envsubst` |
+| docker-compose version warning | Eliminado `version:` obsoleto |
+
+---
+
+## 🔧 n8n - Expresiones Clave
 
 ---
 
@@ -187,11 +206,11 @@ curso-n8n/
 ├── init-multiple-dbs.sh      # Init PostgreSQL multi-DB
 ├── nginx.lab.conf            # Reverse proxy config
 ├── docs/
-│   ├── TEMARIO_ADAPTADO.md   # Temario + labs adaptados
-│   ├── GUIA_LABORATORIOS_UBUNTU24.md  # Guía paso a paso
-│   ├── WORKFLOW_DOC_TEMPLATE.md       # Plantilla doc workflow
-│   ├── SECURITY_POLICY_TEMPLATE.md    # Política seguridad
-│   ├── QUICK_REFERENCE.md             # Esta hoja
+│   ├── temario_adaptado.md   # Temario + labs adaptados
+│   ├── guia_laboratorios_ubuntu24.md  # Guía paso a paso
+│   ├── workflow_doc_template.md       # Plantilla doc workflow
+│   ├── security_policy_template.md    # Política seguridad
+│   ├── quick_reference.md             # Esta hoja
 │   └── modulos/              # 9 módulos teórico-prácticos
 ```
 

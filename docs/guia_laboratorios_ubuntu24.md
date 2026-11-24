@@ -1,6 +1,6 @@
 # Guía de Laboratorios - Ubuntu 24.04 Server
 
-> **Entorno**: Ubuntu 24.04 LTS | **IP ejemplo**: `192.168.1.100` | **Usuario**: `curso`
+> **Entorno**: Ubuntu 24.04 LTS | **IP ejemplo**: `192.168.1.100` | **Usuario**: `curso` | **IP real lab**: `130.117.95.60`
 
 ---
 
@@ -10,7 +10,7 @@
 
 ```bash
 # Desde tu máquina local
-ssh curso@192.168.1.100
+ssh curso@130.117.95.60
 
 # Verificar que estás en el entorno correcto
 lsb_release -a
@@ -47,19 +47,13 @@ cd ~
 git clone https://github.com/agile611/curso-n8n.git
 cd curso-n8n
 
-# Crear archivo de variables de entorno
+# Crear archivo de variables de entorno (incluye LAB_HOST para IP dinámica)
 cat > .env.lab << 'EOF'
-# PostgreSQL
+LAB_HOST=130.117.95.60
 POSTGRES_PASSWORD=n8n_lab_2026
-
-# Redis
 REDIS_PASSWORD=redis_lab_2026
-
-# n8n
 N8N_BASIC_AUTH_PASSWORD=n8n_lab_2026
 N8N_ENCRYPTION_KEY=clave_secreta_32_chars_minimo!!
-
-# Dify
 DIFY_SECRET_KEY=dify_secret_key_32_chars_minimo!!
 
 # Model Provider (Opcional - si usas OpenAI/Azure)
@@ -69,14 +63,14 @@ DIFY_SECRET_KEY=dify_secret_key_32_chars_minimo!!
 EOF
 
 # Verificar archivos necesarios existen
-ls -la docker-compose.lab.yml init-multiple-dbs.sh nginx.lab.conf
+ls -la docker-compose.lab.yml init-multiple-dbs.sh nginx.lab.conf.template envsubst.sh
 ```
 
 ### 0.4 Levantar Stack Completo
 
 ```bash
-# Dar permisos al script de init DB
-chmod +x init-multiple-dbs.sh
+# Dar permisos al script de init DB y entrypoint nginx
+chmod +x init-multiple-dbs.sh envsubst.sh
 
 # Levantar todos los servicios
 docker-compose -f docker-compose.lab.yml --env-file .env.lab up -d
@@ -90,26 +84,26 @@ watch docker-compose -f docker-compose.lab.yml ps
 
 ```bash
 # Desde tu navegador LOCAL (no en el servidor)
-# Documentación: http://192.168.1.100:8001
-# n8n: http://192.168.1.100:5678
-# Dify: http://192.168.1.100:8080
+# Documentación: http://130.117.95.60/docs/  (o :8001)
+# n8n: http://130.117.95.60/n8n/  (o :5678)
+# Dify: http://130.117.95.60/dify/  (o :8080)
 
 # Test rápido via curl desde el servidor
 curl -s http://localhost:5678/healthz   # n8n
-curl -s http://localhost:8080/v1/health    # Dify API
+curl -s http://localhost/console/api/init   # Dify API (via nginx)
 curl -s http://localhost:8001/          # Docs
 ```
 
 ### 0.6 ⚠️ Dify: Configuración Inicial Obligatoria (Setup Wizard)
 
-> **IMPORTANTE**: Al acceder por primera vez a `http://<IP_DEL_SERVIDOR>:8080` (o `http://<IP_DEL_SERVIDOR>/dify/`), verás una página de error con el mensaje:
+> **IMPORTANTE**: Al acceder por primera vez a `http://130.117.95.60/dify/` (o `http://130.117.95.60:8080`), verás una página de error con el mensaje:
 > > "Dify has not been initialized and installed yet. Please proceed with the initialization and installation process first."
 >
 > **Esto es NORMAL y ESPERADO**. Dify requiere un asistente de configuración inicial (Setup Wizard) la primera vez que se ejecuta.
 
 #### Pasos del Setup Wizard (ejecutar UNA sola vez):
 
-1. **Abrir en navegador**: `http://<IP_DEL_SERVIDOR>:8080`
+1. **Abrir en navegador**: `http://130.117.95.60/dify/install` (o `http://130.117.95.60:8080/install`)
 2. **Click "Get Started"**
 3. **Crear cuenta administrador**:
    - Email: `admin@lab.local` (o tu email)
@@ -128,7 +122,7 @@ curl -s http://localhost:8001/          # Docs
 
 | Campo | Valor |
 |-------|-------|
-| **URL** | `http://<IP_DEL_SERVIDOR>:8080` (o `/dify/` via nginx) |
+| **URL** | `http://130.117.95.60/dify/` (o `/dify/install` para setup) |
 | **Email admin** | `admin@lab.local` |
 | **Password admin** | `dify_lab_2026` |
 | **Workspace** | `Curso n8n Lab` |
@@ -137,10 +131,39 @@ curl -s http://localhost:8001/          # Docs
 
 ```bash
 # Test API health (debe devolver JSON, no HTML)
-curl -s http://localhost:8080/v1/health
+curl -s http://localhost/console/api/init
 
 # Test via nginx proxy
 curl -s http://localhost/dify/ | grep -c '__next_error__' && echo "Setup pendiente" || echo "Dify OK"
+```
+
+### 0.7 🔧 Fixes Aplicados (Troubleshooting Común)
+
+Si encuentras problemas durante la instalación, estos son los fixes ya aplicados en el repositorio:
+
+| Problema | Solución Aplicada |
+|----------|-------------------|
+| **n8n: "secure cookie" error** | `N8N_SECURE_COOKIE=false` en docker-compose.lab.yml |
+| **PostgreSQL: "role already exists" error** | Script `init-multiple-dbs.sh` idempotente (CREATE IF NOT EXISTS) |
+| **Dify web: OOM (out of memory)** | `NODE_OPTIONS=--max-old-space-size=6144` + límite 8G container |
+| **Dify API: "net::ERR_NAME_NOT_RESOLVED"** | `CONSOLE_API_URL` usa nginx proxy (puerto 80) → `/console/api/` |
+| **Static assets 404** (`/_next/...`, `/logo/...`) | Nginx locations `/_next/` y `/logo/` proxy a `dify-web:3000` |
+| **Dify setup wizard 404** | Nginx location `/install` proxy a `dify-web:3000/install` |
+| **IP hardcodeada** | Variable `LAB_HOST` en `.env.lab` + `envsubst` en nginx template |
+| **docker-compose version warning** | Eliminado atributo `version:` obsoleto |
+
+#### Comandos de Verificación Post-Instalación:
+
+```bash
+# Verificar todos los servicios
+curl -s http://localhost:5678/healthz && echo "n8n: OK"
+curl -s http://localhost/console/api/init && echo "Dify API: OK"
+curl -s http://localhost/docs/ && echo "Docs: OK"
+curl -s http://localhost/_next/static/chunks/000sllnm6mfe0.css -I | head -1 && echo "Static assets: OK"
+
+# Verificar Dify setup
+curl -s http://localhost/dify/install | grep -c 'Get Started' && echo "Install page: OK"
+curl -s http://localhost/console/api/init | grep -c 'finished' && echo "Dify API: OK"
 ```
 
 ---
@@ -544,7 +567,7 @@ Cada alumno debe entregar:
 - [ ] **Repositorio Git** (o .zip) con:
   - [ ] Workflows n8n exportados (`.json`) - Módulos 2, 3, 6, 9
   - [ ] Capturas de ejecución exitosa (Execution Log verde)
-  - [ ] Documentación workflows (plantilla `WORKFLOW_DOC_TEMPLATE.md`)
+  - [ ] Documentación workflows (plantilla `workflow_doc_template.md`)
 - [ ] **Dify Apps** exportadas (via Settings → Backup) o capturas:
   - [ ] Chat Assistant Clasificador (Módulo 4)
   - [ ] Knowledge Base + Asistente RAG (Módulo 5)

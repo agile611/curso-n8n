@@ -1,6 +1,6 @@
 # Temario Adaptado: Automatización y agentes sin código para perfiles técnicos
 
-> **Versión adaptada** al contenido disponible en `/docs/modulos/` y entorno de laboratorio **Ubuntu 24.04** (IP ejemplo: `192.168.1.100`)
+> **Versión adaptada** al contenido disponible en `/docs/modulos/` y entorno de laboratorio **Ubuntu 24.04** (IP real lab: `130.117.95.60`, IP ejemplo: `192.168.1.100`)
 
 ---
 
@@ -9,7 +9,7 @@
 | Módulo Original (Temario) | Horas | Módulo en Docs | Archivo | Estado |
 |---------------------------|-------|----------------|---------|--------|
 | 1. Fundamentos de automatización y agentes sin código | 2h | **Módulo 1** | `modulo-01-fundamentos.md` | ✅ Completo |
-| 2. Primer workflow práctico con n8n | 2h | **Módulo 2** | `modulo-02-primer-workflow.md` | ✅ Completo |
+| 2. Primer workflow práctico con n8n | 2h | **Módulo 2** | `modulo-02-fundamentos.md` | ✅ Completo |
 | 3. Eventos, webhooks e integración con sistemas | 2h | **Módulo 3** | `modulo-03-eventos-webhooks.md` | ✅ Completo |
 | 4. Asistentes y workflows de IA con Dify | 2h | **Módulo 4** | `modulo-04-asistentes-dify.md` | ✅ Completo |
 | 5. RAG y bases de conocimiento para documentación técnica | 2h | **Módulo 5** | `modulo-05-rag-conocimiento.md` | ✅ Completo |
@@ -30,17 +30,18 @@
 | Componente | Especificación |
 |------------|----------------|
 | **SO** | Ubuntu 24.04 LTS |
-| **Acceso** | SSH: `ssh curso@192.168.1.100` |
+| **Acceso** | SSH: `ssh curso@130.117.95.60` |
 | **Usuario** | `curso` (sudo sin password configurado) |
 | **Docker** | Docker Engine + Docker Compose Plugin |
 | **Puertos expuestos** | 22 (SSH), 80/443 (nginx), 5678 (n8n), 8080 (Dify), 8001 (MkDocs docs) |
+| **IP real lab** | `130.117.95.60` |
 | **IP ejemplo docs** | `192.168.1.100` (sustituir por IP real del lab) |
 
 ### Preparación Previa (Ejecutar ANTES del curso)
 
 ```bash
 # 1. Conectar al servidor de laboratorio
-ssh curso@192.168.1.100
+ssh curso@130.117.95.60
 
 # 2. Verificar requisitos
 docker --version           # Docker version 27.x+
@@ -52,20 +53,44 @@ df -h /                    # Disco ≥ 20 GB libre
 git clone https://github.com/agile611/curso-n8n.git
 cd curso-n8n
 
-# 4. Levantar stack completo (n8n + Dify + Docs + PostgreSQL + Redis)
-docker-compose -f docker-compose.lab.yml up -d
+# 4. Crear .env.lab con LAB_HOST
+cat > .env.lab << 'EOF'
+LAB_HOST=130.117.95.60
+POSTGRES_PASSWORD=n8n_lab_2026
+REDIS_PASSWORD=redis_lab_2026
+N8N_BASIC_AUTH_PASSWORD=n8n_lab_2026
+N8N_ENCRYPTION_KEY=clave_secreta_32_chars_minimo!!
+DIFY_SECRET_KEY=dify_secret_key_32_chars_minimo!!
+EOF
 
-# 5. Verificar servicios
+# 5. Levantar stack completo (n8n + Dify + Docs + PostgreSQL + Redis)
+chmod +x init-multiple-dbs.sh envsubst.sh
+docker-compose -f docker-compose.lab.yml --env-file .env.lab up -d
+
+# 6. Verificar servicios
 docker-compose -f docker-compose.lab.yml ps
 # Todos deben mostrar "Up" / "healthy"
 
-# 6. Acceder a interfaces (desde navegador LOCAL del alumno)
-# - Documentación del curso: http://192.168.1.100:8001
-# - n8n: http://192.168.1.100:5678 (admin / n8n_lab_2026)
-# - Dify: http://192.168.1.100:8080 (admin@lab.local / dify_lab_2026)
+# 7. Acceder a interfaces (desde navegador LOCAL del alumno)
+# - Documentación del curso: http://130.117.95.60/docs/
+# - n8n: http://130.117.95.60/n8n/ (admin / n8n_lab_2026)
+# - Dify: http://130.117.95.60/dify/ (admin@lab.local / dify_lab_2026)
 
-> ⚠️ **Dify primera vez**: Al abrir `http://192.168.1.100:8080` verás *"Dify has not been initialized..."*. **Es normal** → Completa el Setup Wizard (crear admin, workspace, skip model provider si no tienes API Key). Ver [Guía Laboratorios §0.6](../GUIA_LABORATORIOS_UBUNTU24.md#06-dify-configuración-inicial-obligatoria-setup-wizard)
+> ⚠️ **Dify primera vez**: Al abrir `http://130.117.95.60/dify/` verás *"Dify has not been initialized..."*. **Es normal** → Completa el Setup Wizard en `/dify/install` (crear admin, workspace, skip model provider si no tienes API Key). Ver [Guía Laboratorios §0.6](../guia_laboratorios_ubuntu24.md#06-dify-configuración-inicial-obligatoria-setup-wizard)
 ```
+
+### Fixes Aplicados (Troubleshooting Común)
+
+| Problema | Solución Aplicada |
+|----------|-------------------|
+| n8n: "secure cookie" error | `N8N_SECURE_COOKIE=false` en docker-compose.lab.yml |
+| PostgreSQL: "role already exists" error | Script `init-multiple-dbs.sh` idempotente (CREATE IF NOT EXISTS) |
+| Dify web: OOM (out of memory) | `NODE_OPTIONS=--max-old-space-size=6144` + límite 8G container |
+| Dify API: "net::ERR_NAME_NOT_RESOLVED" | `CONSOLE_API_URL` usa nginx proxy (puerto 80) → `/console/api/` |
+| Static assets 404 (`/_next/...`, `/logo/...`) | Nginx locations `/_next/` y `/logo/` proxy a `dify-web:3000` |
+| Dify setup wizard 404 | Nginx location `/install` proxy a `dify-web:3000/install` |
+| IP hardcodeada | Variable `LAB_HOST` en `.env.lab` + `envsubst` en nginx template |
+| docker-compose version warning | Eliminado atributo `version:` obsoleto |
 
 ### docker-compose.lab.yml (Crear en raíz del repo)
 
@@ -520,7 +545,7 @@ http {
 
 | Lab Original | Adaptación Ubuntu 24.04 |
 |--------------|-------------------------|
-| **Lab 8.1** Documentar workflow + dependencias | **Export**: n8n → Workflows → Export (JSON)<br>**Doc**: Plantilla `WORKFLOW_DOC_TEMPLATE.md` en repo<br>**Diagrama**: Mermaid en doc (renderiza en MkDocs) |
+| **Lab 8.1** Documentar workflow + dependencias | **Export**: n8n → Workflows → Export (JSON)<br>**Doc**: Plantilla `workflow_doc_template.md` en repo<br>**Diagrama**: Mermaid en doc (renderiza en MkDocs) |
 | **Lab 8.2** Matriz validación pre-piloto | **Go/No-Go**: Usar plantilla del módulo 8<br>**Evidencias**: Capturas de tests, logs, métricas |
 | **Lab 8.3** Métricas éxito + criterios parada | **Métricas**: Definir en n8n → Settings → Metrics (Prometheus endpoint)<br>**Grafana**: Opcional, `docker run -d -p 3000:3000 grafana/grafana` |
 
