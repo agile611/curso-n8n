@@ -1,8 +1,5 @@
 # docker-compose.yml para Curso n8n
 # Uso: docker-compose up -d
-
-version: '3.8'
-
 services:
   curso-n8n:
     build:
@@ -16,7 +13,7 @@ services:
       - COURSE_NAME=Curso Automatización y agentes sin código
       - COURSE_VERSION=1.0
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/"\]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -47,7 +44,7 @@ services:
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait \$\${!}; done'"
+    entrypoint: ["/bin/sh", "-c", "trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done"]
 
 networks:
   curso-network:
