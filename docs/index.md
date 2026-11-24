@@ -4,6 +4,51 @@
 
 ---
 
+## 🚀 Primer paso: Preparar el entorno de laboratorio
+
+**Antes de empezar el Módulo 1**, necesitas el entorno funcionando en la máquina Ubuntu 24.04 del laboratorio.
+
+> 📖 **Guía completa**: [Guía Laboratorios Ubuntu 24.04](GUIA_LABORATORIOS_UBUNTU24.md#0-preparación-del-entorno-pre-curso)
+
+### Resumen rápido (ejecutar en el servidor de lab)
+
+```bash
+# 1. Conectar al servidor Ubuntu 24.04
+ssh curso@<IP_DEL_SERVIDOR>
+
+# 2. Clonar repositorio y preparar variables
+cd ~
+git clone https://github.com/agile611/curso-n8n.git
+cd curso-n8n
+
+cat > .env.lab << 'EOF'
+POSTGRES_PASSWORD=n8n_lab_2026
+REDIS_PASSWORD=redis_lab_2026
+N8N_BASIC_AUTH_PASSWORD=n8n_lab_2026
+N8N_ENCRYPTION_KEY=clave_secreta_32_chars_minimo!!
+DIFY_SECRET_KEY=dify_secret_key_32_chars_minimo!!
+EOF
+
+# 3. Levantar stack completo (n8n + Dify + PostgreSQL + Redis + Docs)
+chmod +x init-multiple-dbs.sh
+docker compose -f docker-compose.lab.yml --env-file .env.lab up -d
+
+# 4. Verificar que todo está "healthy" (2-3 min)
+docker compose -f docker-compose.lab.yml ps
+```
+
+### Verificar accesos (desde TU navegador local)
+
+| Servicio | URL | Credenciales |
+|----------|-----|--------------|
+| **Documentación del curso** | `http://<IP_DEL_SERVIDOR>:8001` | Pública |
+| **n8n** | `http://<IP_DEL_SERVIDOR>:5678` | `admin` / `n8n_lab_2026` |
+| **Dify** | `http://<IP_DEL_SERVIDOR>:8000` | Registro inicial |
+
+> ⚠️ Sustituye `<IP_DEL_SERVIDOR>` por la IP real de tu máquina de laboratorio (ej. `192.168.1.100`).
+
+---
+
 ## Información general
 
 | Aspecto | Detalle |
@@ -64,7 +109,7 @@ Al finalizar el curso, los participantes serán capaces de:
 
 ---
 
-## Navegación rápida
+## Navegación por módulos
 
 ### Módulos teórico-prácticos
 - [Módulo 1: Fundamentos](modulos/modulo-01-fundamentos.md)
@@ -76,6 +121,14 @@ Al finalizar el curso, los participantes serán capaces de:
 - [Módulo 7: Seguridad, gobierno y calidad](modulos/modulo-07-seguridad-gobierno.md)
 - [Módulo 8: Operación y ciclo de vida](modulos/modulo-08-operacion-ciclo-vida.md)
 - [Módulo 9: Caso práctico final](modulos/modulo-09-caso-final.md)
+
+### Documentación de apoyo
+- [Guía Laboratorios Ubuntu 24.04](GUIA_LABORATORIOS_UBUNTU24.md) - Setup completo, comandos, troubleshooting
+- [Temario Adaptado](TEMARIO_ADAPTADO.md) - Correspondencia temario original ↔ módulos
+- [Plantilla Documentación Workflow](WORKFLOW_DOC_TEMPLATE.md) - Estándar para documentar workflows
+- [Política Seguridad Mínima](SECURITY_POLICY_TEMPLATE.md) - Checklist seguridad prototipo → piloto
+- [Guía Despliegue](deploy.md) - Despliegue nativo/Docker en Ubuntu 24.04
+- [Referencia Rápida](QUICK_REFERENCE.md) - Hoja de chuleta: URLs, comandos, expresiones
 
 ---
 
@@ -117,4 +170,4 @@ Al finalizar el curso, los participantes serán capaces de:
 
 ---
 
-> **¿Listo para empezar?** → [Módulo 1: Fundamentos](modulos/modulo-01-fundamentos.md)
+> **¿Entorno listo?** → [Módulo 1: Fundamentos](modulos/modulo-01-fundamentos.md)
