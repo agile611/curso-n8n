@@ -129,6 +129,7 @@ Al finalizar el curso, los participantes serán capaces de:
 - [Política Seguridad Mínima](SECURITY_POLICY_TEMPLATE.md) - Checklist seguridad prototipo → piloto
 - [Guía Despliegue](deploy.md) - Despliegue nativo/Docker en Ubuntu 24.04
 - [Referencia Rápida](QUICK_REFERENCE.md) - Hoja de chuleta: URLs, comandos, expresiones
+- [Recursos y referencias](recursos.md) - Enlaces curados: docs oficiales, comunidades, certificaciones, lecturas, plantillas del curso
 
 ---
 
