@@ -53,6 +53,11 @@ http {
             proxy_redirect http://$host:5678/ /n8n/;
             proxy_redirect http://$host/setup /n8n/setup;
             proxy_redirect http://$host:5678/setup /n8n/setup;
+            
+            # Security headers to suppress COOP/COEP warnings in HTTP
+            add_header Cross-Origin-Opener-Policy "same-origin-allow-popups" always;
+            add_header Cross-Origin-Embedder-Policy "unsafe-none" always;
+            add_header Origin-Agent-Cluster "?0" always;
         }
 
         # n8n API endpoints (REST API)
@@ -125,6 +130,7 @@ http {
             # Handle Dify redirects to keep them under /dify/
             proxy_redirect http://$host/ /dify/;
             proxy_redirect http://$host:3000/ /dify/;
+            proxy_redirect /install /dify/install;
         }
 
         # Dify install/setup wizard (redirects from / to /install)
