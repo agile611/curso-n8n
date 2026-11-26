@@ -6,7 +6,7 @@
 
 ## 🚀 Primer paso: Preparar el entorno de laboratorio
 
-**Antes de empezar el Módulo 1**, necesitas el entorno funcionando en la máquina Ubuntu 24.04 del laboratorio (IP real: `130.117.95.60`).
+**Antes de empezar el Módulo 1**, necesitas el entorno funcionando en la máquina Ubuntu 24.04 del laboratorio.
 
 > 📖 **Guía completa**: [Guía Laboratorios Ubuntu 24.04](guia_laboratorios_ubuntu24.md#0-preparación-del-entorno-pre-curso)
 
@@ -14,7 +14,7 @@
 
 ```bash
 # 1. Conectar al servidor Ubuntu 24.04
-ssh curso@130.117.95.60
+ssh curso@<IP_DE_TU_SERVIDOR>
 
 # 2. Clonar repositorio y preparar variables
 cd ~
@@ -22,7 +22,8 @@ git clone https://github.com/agile611/curso-n8n.git
 cd curso-n8n
 
 cat > .env.lab << 'EOF'
-LAB_HOST=130.117.95.60
+# ⚠️ Reemplaza <IP_DE_TU_SERVIDOR> por la IP real de tu máquina Ubuntu 24.04
+LAB_HOST=<IP_DE_TU_SERVIDOR>
 POSTGRES_PASSWORD=n8n_lab_2026
 REDIS_PASSWORD=redis_lab_2026
 N8N_BASIC_AUTH_PASSWORD=n8n_lab_2026
@@ -42,11 +43,11 @@ docker-compose -f docker-compose.lab.yml ps
 
 | Servicio | URL | Credenciales |
 |----------|-----|--------------|
-| **Documentación del curso** | `http://130.117.95.60/docs/` | Pública |
-| **n8n** | `http://130.117.95.60/n8n/` | `admin` / `n8n_lab_2026` |
-| **Dify** | `http://130.117.95.60/dify/` | `admin@lab.local` / `dify_lab_2026` |
+| **Documentación del curso** | `http://<IP_DE_TU_SERVIDOR>/docs/` | Pública |
+| **n8n** | `http://<IP_DE_TU_SERVIDOR>/n8n/` | `admin` / `n8n_lab_2026` |
+| **Dify** | `http://<IP_DE_TU_SERVIDOR>/dify/` | `admin@lab.local` / `dify_lab_2026` |
 
-> 🔔 **Dify primera vez**: Al abrir `http://130.117.95.60/dify/` verás *"Dify has not been initialized..."*. **Es normal** → Completa el [Setup Wizard](guia_laboratorios_ubuntu24.md#06-dify-configuración-inicial-obligatoria-setup-wizard) (crear admin, workspace, skip model provider si no tienes API Key).
+> 🔔 **Dify primera vez**: Al abrir `http://<IP_DE_TU_SERVIDOR>/dify/` verás *"Dify has not been initialized..."*. **Es normal** → Completa el [Setup Wizard](guia_laboratorios_ubuntu24.md#06-dify-configuración-inicial-obligatoria-setup-wizard) (crear admin, workspace, skip model provider si no tienes API Key).
 
 > 🔧 **Fixes ya aplicados**: n8n secure cookie, PostgreSQL idempotente, Dify OOM, API URL via nginx, static assets, setup wizard, IP dinámica con LAB_HOST. Ver [Guía Laboratorios §0.7](guia_laboratorios_ubuntu24.md#07-fixes-aplicados-troubleshooting-común).
 

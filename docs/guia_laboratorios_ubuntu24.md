@@ -1,6 +1,6 @@
 # Guía de Laboratorios - Ubuntu 24.04 Server
 
-> **Entorno**: Ubuntu 24.04 LTS | **IP ejemplo**: `192.168.1.100` | **Usuario**: `curso` | **IP real lab**: `130.117.95.60`
+> **Entorno**: Ubuntu 24.04 LTS | **IP ejemplo**: `192.168.1.100` | **Usuario**: `curso` | **IP del servidor**: `<IP_DE_TU_SERVIDOR>` (configurada en `.env.lab` como `LAB_HOST`)
 
 ---
 
@@ -10,7 +10,7 @@
 
 ```bash
 # Desde tu máquina local
-ssh curso@130.117.95.60
+ssh curso@<IP_DE_TU_SERVIDOR>
 
 # Verificar que estás en el entorno correcto
 lsb_release -a
@@ -48,8 +48,9 @@ git clone https://github.com/agile611/curso-n8n.git
 cd curso-n8n
 
 # Crear archivo de variables de entorno (incluye LAB_HOST para IP dinámica)
+# ⚠️ IMPORTANTE: Reemplaza <IP_DE_TU_SERVIDOR> por la IP real de tu máquina Ubuntu 24.04
 cat > .env.lab << 'EOF'
-LAB_HOST=130.117.95.60
+LAB_HOST=<IP_DE_TU_SERVIDOR>
 POSTGRES_PASSWORD=n8n_lab_2026
 REDIS_PASSWORD=redis_lab_2026
 N8N_BASIC_AUTH_PASSWORD=n8n_lab_2026
@@ -84,9 +85,9 @@ watch docker-compose -f docker-compose.lab.yml ps
 
 ```bash
 # Desde tu navegador LOCAL (no en el servidor)
-# Documentación: http://130.117.95.60/docs/  (o :8001)
-# n8n: http://130.117.95.60/n8n/  (o :5678)
-# Dify: http://130.117.95.60/dify/  (o :8080)
+# Documentación: http://<IP_DE_TU_SERVIDOR>/docs/  (o :8001)
+# n8n: http://<IP_DE_TU_SERVIDOR>/n8n/  (o :5678)
+# Dify: http://<IP_DE_TU_SERVIDOR>/dify/  (o :8080)
 
 # Test rápido via curl desde el servidor
 curl -s http://localhost:5678/healthz   # n8n
@@ -96,14 +97,14 @@ curl -s http://localhost:8001/          # Docs
 
 ### 0.6 ⚠️ Dify: Configuración Inicial Obligatoria (Setup Wizard)
 
-> **IMPORTANTE**: Al acceder por primera vez a `http://130.117.95.60/dify/` (o `http://130.117.95.60:8080`), verás una página de error con el mensaje:
+> **IMPORTANTE**: Al acceder por primera vez a `http://<IP_DE_TU_SERVIDOR>/dify/` (o `http://<IP_DE_TU_SERVIDOR>:8080`), verás una página de error con el mensaje:
 > > "Dify has not been initialized and installed yet. Please proceed with the initialization and installation process first."
 >
 > **Esto es NORMAL y ESPERADO**. Dify requiere un asistente de configuración inicial (Setup Wizard) la primera vez que se ejecuta.
 
 #### Pasos del Setup Wizard (ejecutar UNA sola vez):
 
-1. **Abrir en navegador**: `http://130.117.95.60/dify/install` (o `http://130.117.95.60:8080/install`)
+1. **Abrir en navegador**: `http://<IP_DE_TU_SERVIDOR>/dify/install` (o `http://<IP_DE_TU_SERVIDOR>:8080/install`)
 2. **Click "Get Started"**
 3. **Crear cuenta administrador**:
    - Email: `admin@lab.local` (o tu email)
@@ -122,7 +123,7 @@ curl -s http://localhost:8001/          # Docs
 
 | Campo | Valor |
 |-------|-------|
-| **URL** | `http://130.117.95.60/dify/` (o `/dify/install` para setup) |
+| **URL** | `http://<IP_DE_TU_SERVIDOR>/dify/` (o `/dify/install` para setup) |
 | **Email admin** | `admin@lab.local` |
 | **Password admin** | `dify_lab_2026` |
 | **Workspace** | `Curso n8n Lab` |

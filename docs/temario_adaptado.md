@@ -1,6 +1,6 @@
 # Temario Adaptado: Automatización y agentes sin código para perfiles técnicos
 
-> **Versión adaptada** al contenido disponible en `/docs/modulos/` y entorno de laboratorio **Ubuntu 24.04** (IP real lab: `130.117.95.60`, IP ejemplo: `192.168.1.100`)
+> **Versión adaptada** al contenido disponible en `/docs/modulos/` y entorno de laboratorio **Ubuntu 24.04** (IP ejemplo: `192.168.1.100` — cada alumno usa su propia IP)
 
 ---
 
@@ -30,18 +30,17 @@
 | Componente | Especificación |
 |------------|----------------|
 | **SO** | Ubuntu 24.04 LTS |
-| **Acceso** | SSH: `ssh curso@130.117.95.60` |
+| **Acceso** | SSH: `ssh curso@<IP_DE_TU_SERVIDOR>` |
 | **Usuario** | `curso` (sudo sin password configurado) |
 | **Docker** | Docker Engine + Docker Compose Plugin |
 | **Puertos expuestos** | 22 (SSH), 80/443 (nginx), 5678 (n8n), 8080 (Dify), 8001 (MkDocs docs) |
-| **IP real lab** | `130.117.95.60` |
-| **IP ejemplo docs** | `192.168.1.100` (sustituir por IP real del lab) |
+| **IP del servidor** | Configurada en `.env.lab` como `LAB_HOST=<IP_DE_TU_SERVIDOR>` (ej. `192.168.1.100`) |
 
 ### Preparación Previa (Ejecutar ANTES del curso)
 
 ```bash
 # 1. Conectar al servidor de laboratorio
-ssh curso@130.117.95.60
+ssh curso@<IP_DE_TU_SERVIDOR>
 
 # 2. Verificar requisitos
 docker --version           # Docker version 27.x+
@@ -54,8 +53,9 @@ git clone https://github.com/agile611/curso-n8n.git
 cd curso-n8n
 
 # 4. Crear .env.lab con LAB_HOST
+# ⚠️ IMPORTANTE: Reemplaza <IP_DE_TU_SERVIDOR> por la IP real de tu máquina Ubuntu 24.04
 cat > .env.lab << 'EOF'
-LAB_HOST=130.117.95.60
+LAB_HOST=<IP_DE_TU_SERVIDOR>
 POSTGRES_PASSWORD=n8n_lab_2026
 REDIS_PASSWORD=redis_lab_2026
 N8N_BASIC_AUTH_PASSWORD=n8n_lab_2026
@@ -72,11 +72,11 @@ docker-compose -f docker-compose.lab.yml ps
 # Todos deben mostrar "Up" / "healthy"
 
 # 7. Acceder a interfaces (desde navegador LOCAL del alumno)
-# - Documentación del curso: http://130.117.95.60/docs/
-# - n8n: http://130.117.95.60/n8n/ (admin / n8n_lab_2026)
-# - Dify: http://130.117.95.60/dify/ (admin@lab.local / dify_lab_2026)
+# - Documentación del curso: http://<IP_DE_TU_SERVIDOR>/docs/
+# - n8n: http://<IP_DE_TU_SERVIDOR>/n8n/ (admin / n8n_lab_2026)
+# - Dify: http://<IP_DE_TU_SERVIDOR>/dify/ (admin@lab.local / dify_lab_2026)
 
-> ⚠️ **Dify primera vez**: Al abrir `http://130.117.95.60/dify/` verás *"Dify has not been initialized..."*. **Es normal** → Completa el Setup Wizard en `/dify/install` (crear admin, workspace, skip model provider si no tienes API Key). Ver [Guía Laboratorios §0.6](../guia_laboratorios_ubuntu24.md#06-dify-configuración-inicial-obligatoria-setup-wizard)
+> ⚠️ **Dify primera vez**: Al abrir `http://<IP_DE_TU_SERVIDOR>/dify/` verás *"Dify has not been initialized..."*. **Es normal** → Completa el Setup Wizard en `/dify/install` (crear admin, workspace, skip model provider si no tienes API Key). Ver [Guía Laboratorios §0.6](../guia_laboratorios_ubuntu24.md#06-dify-configuración-inicial-obligatoria-setup-wizard)
 ```
 
 ### Fixes Aplicados (Troubleshooting Común)

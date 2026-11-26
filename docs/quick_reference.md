@@ -1,6 +1,6 @@
 # Quick Reference Card - Curso n8n + Dify
 
-> **Entorno Lab**: Ubuntu 24.04 | **IP real**: `130.117.95.60` | **IP ejemplo**: `192.168.1.100`
+> **Entorno Lab**: Ubuntu 24.04 | **IP real**: `<IP_DE_TU_SERVIDOR>` (ej. `192.168.1.100`) | Configurada en `.env.lab` como `LAB_HOST`
 
 ---
 
@@ -8,13 +8,15 @@
 
 | Servicio | URL | Credenciales |
 |----------|-----|--------------|
-| **Docs Curso** | `http://130.117.95.60/docs/` | Pública |
-| **n8n** | `http://130.117.95.60/n8n/` | `admin` / `n8n_lab_2026` |
-| **Dify** | `http://130.117.95.60/dify/` | `admin@lab.local` / `dify_lab_2026` |
-| **n8n Webhooks** | `http://130.117.95.60/n8n/webhook/` | - |
-| **Dify API** | `http://130.117.95.60/console/api/` | `Bearer <APP_API_KEY>` |
+| **Docs Curso** | `http://<IP_DE_TU_SERVIDOR>/docs/` | Pública |
+| **n8n** | `http://<IP_DE_TU_SERVIDOR>/n8n/` | `admin` / `n8n_lab_2026` |
+| **Dify** | `http://<IP_DE_TU_SERVIDOR>/dify/` | `admin@lab.local` / `dify_lab_2026` |
+| **n8n Webhooks** | `http://<IP_DE_TU_SERVIDOR>/n8n/webhook/` | - |
+| **Dify API** | `http://<IP_DE_TU_SERVIDOR>/console/api/` | `Bearer <APP_API_KEY>` |
 
-> ⚠️ **Dify primera vez**: Al abrir `http://130.117.95.60/dify/` verás "Dify has not been initialized". Es normal → Completa el Setup Wizard en `/dify/install` (ver [Guía Laboratorios §0.6](guia_laboratorios_ubuntu24.md#06-dify-configuración-inicial-obligatoria-setup-wizard))
+> ⚠️ **Dify primera vez**: Al abrir `http://<IP_DE_TU_SERVIDOR>/dify/` verás "Dify has not been initialized". Es normal → Completa el Setup Wizard en `/dify/install` (ver [Guía Laboratorios §0.6](guia_laboratorios_ubuntu24.md#06-dify-configuración-inicial-obligatoria-setup-wizard))
+
+> 💡 **IP del servidor**: Configurada en `.env.lab` como `LAB_HOST=<IP_DE_TU_SERVIDOR>` (ej. `192.168.1.100`). nginx usa `envsubst` para sustituir `${LAB_HOST}` en la configuración.
 
 ---
 
