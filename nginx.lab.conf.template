@@ -45,8 +45,8 @@ http {
             proxy_set_header X-Forwarded-Proto $scheme;
             proxy_set_header X-Forwarded-Host $host;
             proxy_set_header X-Forwarded-Prefix /n8n;
-            proxy_read_timeout 300s;
-            proxy_send_timeout 300s;
+            proxy_read_timeout 600s;
+            proxy_send_timeout 600s;
             
             # Handle n8n redirects to keep them under /n8n/
             proxy_redirect http://$host/ /n8n/;
@@ -124,8 +124,8 @@ http {
             proxy_set_header X-Forwarded-Proto $scheme;
             proxy_set_header X-Forwarded-Host $host;
             proxy_set_header X-Forwarded-Prefix /dify;
-            proxy_read_timeout 300s;
-            proxy_send_timeout 300s;
+            proxy_read_timeout 600s;
+            proxy_send_timeout 600s;
             
             # Handle Dify redirects to keep them under /dify/
             proxy_redirect http://$host/ /dify/;
@@ -158,8 +158,8 @@ http {
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
             proxy_set_header X-Forwarded-Host $host;
-            proxy_read_timeout 300s;
-            proxy_send_timeout 300s;
+            proxy_read_timeout 600s;
+            proxy_send_timeout 600s;
         }
 
         # Dify static assets (_next/, logo/) - serve from dify-web
