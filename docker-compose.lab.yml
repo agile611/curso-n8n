@@ -105,8 +105,8 @@ services:
       
       # Config
       SECRET_KEY: "${DIFY_SECRET_KEY:-dify_secret_key_32_chars_minimo!!}"
-      # API URL: usa LAB_HOST del .env.lab para acceso desde navegador
-      CONSOLE_API_URL: "http://${LAB_HOST:-130.117.95.60}:8080"
+      # API URL: usa LAB_HOST del .env.lab - CONSOLE_API_URL debe ser el proxy nginx (puerto 80)
+      CONSOLE_API_URL: "http://${LAB_HOST:-130.117.95.60}"
       CONSOLE_WEB_URL: "http://${LAB_HOST:-130.117.95.60}:8080"
       SERVICE_API_URL: "http://${LAB_HOST:-130.117.95.60}:8080/v1"
       FILES_URL: "http://${LAB_HOST:-130.117.95.60}:8080/v1/files"
