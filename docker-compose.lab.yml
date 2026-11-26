@@ -41,8 +41,8 @@ services:
       N8N_PROTOCOL: "http"
       WEBHOOK_URL: "http://${LAB_HOST:-130.117.95.60}:5678/"
       GENERIC_TIMEZONE: "Europe/Madrid"
-      # IMPORTANTE: n8n running under /n8n/ subpath
-      N8N_PATH: "/n8n"
+      # IMPORTANTE: n8n running under /n8n/ subpath (trailing slash required for asset URLs)
+      N8N_PATH: "/n8n/"
       
       # Database
       DB_TYPE: "postgresdb"
