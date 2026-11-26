@@ -41,6 +41,8 @@ services:
       N8N_PROTOCOL: "http"
       WEBHOOK_URL: "http://${LAB_HOST:-130.117.95.60}:5678/"
       GENERIC_TIMEZONE: "Europe/Madrid"
+      # IMPORTANTE: n8n running under /n8n/ subpath
+      N8N_PATH: "/n8n"
       
       # Database
       DB_TYPE: "postgresdb"
@@ -133,8 +135,8 @@ services:
     image: langgenius/dify-web:latest
     environment:
       # API URL: usa LAB_HOST del .env.lab para acceso desde navegador
-      # IMPORTANTE: CONSOLE_API_URL debe apuntar al proxy nginx (puerto 80) para que /console/api/ vaya al API
-      CONSOLE_API_URL: "http://${LAB_HOST:-130.117.95.60}"
+      # IMPORTANTE: CONSOLE_API_URL debe incluir /dify para que el frontend haga llamadas a /dify/console/api/
+      CONSOLE_API_URL: "http://${LAB_HOST:-130.117.95.60}/dify"
       CONSOLE_WEB_URL: "http://${LAB_HOST:-130.117.95.60}:8080"
       # Increase Node.js memory limit to prevent OOM
       NODE_OPTIONS: "--max-old-space-size=6144"
