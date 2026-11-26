@@ -149,6 +149,33 @@ Si encuentras problemas durante la instalación, estos son los fixes ya aplicado
 | **Dify API: "net::ERR_NAME_NOT_RESOLVED"** | `CONSOLE_API_URL` usa nginx proxy (puerto 80) → `/console/api/` |
 | **Static assets 404** (`/_next/...`, `/logo/...`) | Nginx locations `/_next/` y `/logo/` proxy a `dify-web:3000` |
 | **Dify setup wizard 404** | Nginx location `/install` proxy a `dify-web:3000/install` |
+| **n8n static assets 404** (`/static/...`, `/assets/...`) | Nginx locations `/static/` y `/assets/` proxy a `n8n:5678` |
+| **IP hardcodeada** | Variable `LAB_HOST` en `.env.lab` + `envsubst` en nginx template |
+| **docker-compose version warning** | Eliminado atributo `version:` obsoleto |
+
+#### Comandos de Verificación Post-Instalación:
+
+```bash
+# Verificar todos los servicios
+curl -s http://localhost:5678/healthz && echo "n8n: OK"
+curl -s http://localhost/n8n/healthz && echo "nginx->n8n: OK"
+curl -s -I http://localhost/static/prefers-color-scheme.css | grep -c "200" && echo "n8n static: OK"
+curl -s -I http://localhost/assets/index-D6_HFhbh.js | grep -c "200" && echo "n8n assets: OK"
+curl -s http://localhost/n8n/ | grep -c "n8n" && echo "n8n UI: OK"
+
+curl -s http://localhost/console/api/init && echo "Dify API: OK"
+curl -s http://localhost/dify/install | grep -c "Get Started" && echo "Dify Install: OK"
+curl -s -I http://localhost/dify/ | grep -c "307" && echo "Dify redirect: OK"
+curl -s -I http://localhost/_next/static/chunks/000sllnm6mfe0.css | grep -c "200" && echo "Dify static: OK"
+
+curl -s http://localhost/docs/ | head -c 50 && echo "Docs: OK"
+curl -s -I http://localhost/ | grep -c "302" && echo "Root redirect: OK"
+```
+
+---
+
+## 1. Configuración Inicial n8n (Módulo 2)
+| **Dify setup wizard 404** | Nginx location `/install` proxy a `dify-web:3000/install` |
 | **IP hardcodeada** | Variable `LAB_HOST` en `.env.lab` + `envsubst` en nginx template |
 | **docker-compose version warning** | Eliminado atributo `version:` obsoleto |
 

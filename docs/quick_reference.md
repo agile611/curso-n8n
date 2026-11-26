@@ -62,10 +62,6 @@ docker-compose -f docker-compose.lab.yml down -v
 
 ## 🔧 n8n - Expresiones Clave
 
----
-
-## 🔧 n8n - Expresiones Clave
-
 | Qué | Sintaxis |
 |-----|----------|
 | Campo input actual | `{{ $json.campo }}` |
