@@ -177,7 +177,7 @@ http {
 
         # Redirect /auth/* to /dify/auth/* for Dify subpath
         location /auth/ {
-            return 307 /dify/auth$request_uri;
+            rewrite ^/auth/(.*)$ /dify/auth/$1 permanent;
         }
 
         # Dify Console API (browser calls from Dify web UI) - proxied to dify-api
