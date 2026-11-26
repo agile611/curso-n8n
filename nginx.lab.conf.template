@@ -175,9 +175,9 @@ http {
             proxy_set_header X-Forwarded-Prefix /dify;
         }
 
-        # Redirect /auth/ to /dify/auth/ for Dify subpath
+        # Redirect /auth/* to /dify/auth/* for Dify subpath
         location /auth/ {
-            return 307 /dify/auth/;
+            return 307 /dify/auth$request_uri;
         }
 
         # Dify Console API (browser calls from Dify web UI) - proxied to dify-api
