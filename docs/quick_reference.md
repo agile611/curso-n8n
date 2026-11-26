@@ -39,7 +39,7 @@ docker-compose -f docker-compose.lab.yml restart n8n
 
 # Backup workflows n8n
 curl -H "Authorization: Basic $(echo -n 'admin:n8n_lab_2026' | base64)" \
-  http://130.117.95.60:5678/api/v1/workflows > backup-$(date +%Y%m%d).json
+  http://<IP_DE_TU_SERVIDOR>:5678/api/v1/workflows > backup-$(date +%Y%m%d).json
 
 # Limpiar todo
 docker-compose -f docker-compose.lab.yml down -v
