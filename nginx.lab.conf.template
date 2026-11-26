@@ -133,7 +133,7 @@ http {
             proxy_redirect /install /dify/install;
         }
 
-        # Dify auth endpoints (login, refresh, etc.)
+        # Dify auth endpoints (login, refresh, signin, etc.)
         location /dify/auth/ {
             proxy_pass http://dify_backend/auth/;
             proxy_http_version 1.1;
@@ -147,6 +147,14 @@ http {
             proxy_set_header X-Forwarded-Prefix /dify;
             proxy_read_timeout 600s;
             proxy_send_timeout 600s;
+            
+            # Handle auth redirects to keep them under /dify/
+            proxy_redirect http://$host/auth/ /dify/auth/;
+            proxy_redirect http://$host:3000/auth/ /dify/auth/;
+            proxy_redirect http://$host/signin /dify/signin;
+            proxy_redirect http://$host:3000/signin /dify/signin;
+            proxy_redirect http://$host/signup /dify/signup;
+            proxy_redirect http://$host:3000/signup /dify/signup;
         }
 
         # Dify install/setup wizard (redirects from / to /install)
