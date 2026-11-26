@@ -140,6 +140,8 @@ services:
       CONSOLE_API_URL: "http://${LAB_HOST:-130.117.95.60}/dify"
       # CONSOLE_WEB_URL debe ser la URL pública donde se accede al web UI (via nginx proxy en puerto 80)
       CONSOLE_WEB_URL: "http://${LAB_HOST:-130.117.95.60}/dify"
+      # IMPORTANTE: BASE_PATH para que el frontend sepa que está bajo /dify
+      NEXT_PUBLIC_BASE_PATH=/dify
       # Increase Node.js memory limit to prevent OOM
       NODE_OPTIONS: "--max-old-space-size=6144"
     ports:
