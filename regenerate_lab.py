@@ -176,11 +176,12 @@ log_info "Dify setup may take 60-120 seconds. Please be patient..."
 
 for i in {1..60}; do
     # Check if Dify API is responding (setup may return 200 or 201 during init)
-    if curl -sf -o /dev/null --max-time 5 "http://130.117.95.60/dify/console/api/setup" 2>/dev/null; then
+    # Use direct port 5001 since Dify is no longer behind nginx
+    if curl -sf -o /dev/null --max-time 5 "http://$LOCAL_IP:5001/console/api/setup" 2>/dev/null; then
         log_success "Dify initialization detected - setup in progress or complete"
         sleep 5
         # Verify Dify is fully up by checking a stable endpoint
-        if curl -sf -o /dev/null --max-time 5 "http://130.117.95.60/dify/console/api/system-features" 2>/dev/null; then
+        if curl -sf -o /dev/null --max-time 5 "http://$LOCAL_IP:5001/console/api/system-features" 2>/dev/null; then
             log_success "Dify is fully initialized!"
             break
         fi

@@ -44,6 +44,17 @@ if ! groups | grep -q docker; then
     log_warn "Run: sudo usermod -aG docker $(whoami) && newgrp docker"
 fi
 
+# Detect the lab server IP (130.117.95.0/24 range) early for use in health checks
+LOCAL_IP=$(ip -4 addr show scope global | awk '/130\.117\.95\./ {print $2}' | cut -d/ -f1 | head -1)
+if [[ -z "$LOCAL_IP" ]]; then
+    # Fallback to any global IP
+    LOCAL_IP=$(hostname -I | awk '{print $1}')
+fi
+if [[ -z "$LOCAL_IP" ]]; then
+    LOCAL_IP=$(ip route get 1.1.1.1 | awk '{print $7; exit}')
+fi
+log_info "Detected lab IP: $LOCAL_IP"
+
 # Step 1: Clean up existing deployment (based on docker-compose.lab.yml)
 log_info "Step 1: Cleaning up existing deployment..."
 cd "$REMOTE_DIR"
@@ -140,11 +151,12 @@ log_info "Dify setup may take 60-120 seconds. Please be patient..."
 
 for i in {1..60}; do
     # Check if Dify API is responding (setup may return 200 or 201 during init)
-    if curl -sf -o /dev/null --max-time 5 "http://130.117.95.60/dify/console/api/setup" 2>/dev/null; then
+    # Use direct port 5001 since Dify is no longer behind nginx
+    if curl -sf -o /dev/null --max-time 5 "http://$LOCAL_IP:5001/console/api/setup" 2>/dev/null; then
         log_success "Dify initialization detected - setup in progress or complete"
         sleep 5
         # Verify Dify is fully up by checking a stable endpoint
-        if curl -sf -o /dev/null --max-time 5 "http://130.117.95.60/dify/console/api/system-features" 2>/dev/null; then
+        if curl -sf -o /dev/null --max-time 5 "http://$LOCAL_IP:5001/console/api/system-features" 2>/dev/null; then
             log_success "Dify is fully initialized!"
             break
         fi
