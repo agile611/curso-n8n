@@ -181,6 +181,45 @@ http {
             # The relative redirect rules above handle the path part
         }
 
+        # Handle /auth/refresh specifically to strip query string and prevent redirect loops
+        location /dify/auth/refresh {
+            proxy_pass http://dify_backend/auth/refresh?;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-Prefix /dify;
+            proxy_read_timeout 600s;
+            proxy_send_timeout 600s;
+            
+            # Handle auth redirects to keep them under /dify/
+            proxy_redirect http://$host/auth/ /dify/auth/;
+            proxy_redirect http://$host:3000/auth/ /dify/auth/;
+            proxy_redirect http://$host/signin /dify/signin;
+            proxy_redirect http://$host:3000/signin /dify/signin;
+            proxy_redirect http://$host/signup /dify/signup;
+            proxy_redirect http://$host:3000/signup /dify/signup;
+            proxy_redirect http://localhost/auth/ /dify/auth/;
+            proxy_redirect http://localhost:3000/auth/ /dify/auth/;
+            proxy_redirect http://localhost/signin /dify/signin;
+            proxy_redirect http://localhost:3000/signin /dify/signin;
+            proxy_redirect http://localhost/signup /dify/signup;
+            proxy_redirect http://localhost:3000/signup /dify/signup;
+            proxy_redirect http://130.117.95.60/auth/ /dify/auth/;
+            proxy_redirect http://130.117.95.60:3000/auth/ /dify/auth/;
+            proxy_redirect http://130.117.95.60/signin /dify/signin;
+            proxy_redirect http://130.117.95.60:3000/signin /dify/signin;
+            proxy_redirect http://130.117.95.60/signup /dify/signup;
+            proxy_redirect http://130.117.95.60:3000/signup /dify/signup;
+            proxy_redirect /signin /dify/signin;
+            proxy_redirect /signup /dify/signup;
+            proxy_redirect /auth/ /dify/auth/;
+        }
+
         # Dify install/setup wizard (redirects from / to /install)
         location /install {
             proxy_pass http://dify_backend/install;
