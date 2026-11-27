@@ -145,13 +145,10 @@ docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d
 log_info "Step 9: Running Dify database migrations..."
 sleep 15  # Wait for PostgreSQL to be fully ready
 
-# Try different migration commands (Dify uses Flask-Migrate/Alembic)
-log_info "Attempting Dify migrations..."
-docker compose -f "$COMPOSE_FILE" run --rm dify-api python -m flask db upgrade 2>/dev/null || \
-docker compose -f "$COMPOSE_FILE" run --rm dify-api flask db upgrade 2>/dev/null || \
-docker compose -f "$COMPOSE_FILE" run --rm dify-api python manage.py db upgrade 2>/dev/null || \
-docker compose -f "$COMPOSE_FILE" run --rm dify-api alembic upgrade head 2>/dev/null || \
-log_warn "Migration command not found or already applied - continuing..."
+# Dify requires --entrypoint="" to override the default gunicorn entrypoint
+log_info "Running: docker compose run --rm --entrypoint=\"\" dify-api python -m flask db upgrade"
+docker compose -f "$COMPOSE_FILE" run --rm --entrypoint="" dify-api python -m flask db upgrade || \
+log_warn "Migration failed or already applied - continuing..."
 
 # Step 10: Wait for services to be healthy
 log_info "Step 10: Waiting for services to become healthy..."
