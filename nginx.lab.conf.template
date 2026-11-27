@@ -177,11 +177,8 @@ http {
             proxy_redirect ~^/signin(.*)$ /dify/signin$1;
             proxy_redirect ~^/signup(.*)$ /dify/signup$1;
             proxy_redirect ~^/auth/(.*)$ /dify/auth/$1;
-            # Handle external IP redirects with query params
-            proxy_redirect http://130.117.95.60/signin?(.*)$ /dify/signin?$1;
-            proxy_redirect http://130.117.95.60:3000/signin?(.*)$ /dify/signin?$1;
-            proxy_redirect http://130.117.95.60/signup?(.*)$ /dify/signup?$1;
-            proxy_redirect http://130.117.95.60:3000/signup?(.*)$ /dify/signup?$1;
+            # Note: proxy_redirect doesn't support regex with query strings directly
+            # The relative redirect rules above handle the path part
         }
 
         # Dify install/setup wizard (redirects from / to /install)
