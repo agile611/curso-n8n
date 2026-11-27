@@ -177,11 +177,9 @@ http {
             proxy_redirect ~^/signin(.*)$ /dify/signin$1;
             proxy_redirect ~^/signup(.*)$ /dify/signup$1;
             proxy_redirect ~^/auth/(.*)$ /dify/auth/$1;
-            # Handle localhost redirects with query params
-            proxy_redirect http://localhost/signin?(.*)$ /dify/signin?$1;
-            proxy_redirect http://localhost:3000/signin?(.*)$ /dify/signin?$1;
-            proxy_redirect http://localhost/signup?(.*)$ /dify/signup?$1;
-            proxy_redirect http://localhost:3000/signup?(.*)$ /dify/signup?$1;
+            # Handle localhost redirects with query params (using map for query string handling)
+            # Note: proxy_redirect doesn't support regex with query strings directly
+            # The relative redirect rules below handle the path part
         }
 
         # Dify install/setup wizard (redirects from / to /install)
