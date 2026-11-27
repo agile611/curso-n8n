@@ -107,12 +107,12 @@ services:
       
       # Config
       SECRET_KEY: "${DIFY_SECRET_KEY:-dify_secret_key_32_chars_minimo!!}"
-      # API URL: usa LAB_HOST del .env.lab - CONSOLE_API_URL debe ser el proxy nginx (puerto 80)
-      CONSOLE_API_URL: "http://${LAB_HOST:-130.117.95.60}/dify"
-      # CONSOLE_WEB_URL debe ser la URL pública donde se accede al web UI (via nginx proxy en puerto 80)
-      CONSOLE_WEB_URL: "http://${LAB_HOST:-130.117.95.60}/dify"
-      SERVICE_API_URL: "http://${LAB_HOST:-130.117.95.60}/dify/v1"
-      FILES_URL: "http://${LAB_HOST:-130.117.95.60}/dify/v1/files"
+      # API URL: URL externa accesible desde el navegador (puerto 5001 expuesto)
+      CONSOLE_API_URL: "http://${LAB_HOST:-130.117.95.60}:5001"
+      # CONSOLE_WEB_URL: URL pública directa al web UI (puerto 8080)
+      CONSOLE_WEB_URL: "http://${LAB_HOST:-130.117.95.60}:8080"
+      SERVICE_API_URL: "http://${LAB_HOST:-130.117.95.60}:5001/v1"
+      FILES_URL: "http://${LAB_HOST:-130.117.95.60}:5001/v1/files"
       
       # Storage (local para lab)
       STORAGE_TYPE: "local"
@@ -122,6 +122,8 @@ services:
       # OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
       # AZURE_OPENAI_API_KEY: "${AZURE_OPENAI_API_KEY:-}"
       # OLLAMA_BASE_URL: "http://ollama:11434"
+    ports:
+      - "5001:5001"
     volumes:
       - dify_storage:/var/lib/dify/storage
     depends_on:
@@ -135,13 +137,12 @@ services:
   dify-web:
     image: langgenius/dify-web:latest
     environment:
-      # API URL: usa LAB_HOST del .env.lab para acceso desde navegador
-      # IMPORTANTE: CONSOLE_API_URL debe incluir /dify para que el frontend haga llamadas a /dify/console/api/
-      CONSOLE_API_URL: "http://${LAB_HOST:-130.117.95.60}/dify"
-      # CONSOLE_WEB_URL debe ser la URL pública donde se accede al web UI (via nginx proxy en puerto 80)
-      CONSOLE_WEB_URL: "http://${LAB_HOST:-130.117.95.60}/dify"
-      # IMPORTANTE: BASE_PATH para que el frontend sepa que está bajo /dify
-      NEXT_PUBLIC_BASE_PATH: "/dify"
+      # API URL: apunta directamente al contenedor dify-api (red interna docker)
+      CONSOLE_API_URL: "http://dify-api:5001"
+      # CONSOLE_WEB_URL: URL pública directa al web UI (puerto 8080)
+      CONSOLE_WEB_URL: "http://${LAB_HOST:-130.117.95.60}:8080"
+      # BASE_PATH vacío porque ya no está bajo subpath /dify
+      NEXT_PUBLIC_BASE_PATH: ""
       # Increase Node.js memory limit to prevent OOM
       NODE_OPTIONS: "--max-old-space-size=6144"
     ports:
