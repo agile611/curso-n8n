@@ -44,24 +44,19 @@ if ! groups | grep -q docker; then
     log_warn "Run: sudo usermod -aG docker $(whoami) && newgrp docker"
 fi
 
-# Step 1: Clean up existing deployment
+# Step 1: Clean up existing deployment (based on docker-compose.lab.yml)
 log_info "Step 1: Cleaning up existing deployment..."
 cd "$REMOTE_DIR"
 
-# Stop and remove containers, networks, volumes (based on docker-compose.lab.yml)
+# Stop and remove containers, networks, and volumes defined in docker-compose.lab.yml
 if [[ -f "$COMPOSE_FILE" ]]; then
-    log_info "Stopping and removing all containers, networks, and volumes..."
+    log_info "Running: docker compose -f $COMPOSE_FILE down -v --remove-orphans"
     docker compose -f "$COMPOSE_FILE" down -v --remove-orphans 2>/dev/null || true
-    
-    # Explicitly remove named volumes from docker-compose.lab.yml
-    log_info "Removing named volumes: postgres_data, redis_data, n8n_data, dify_storage..."
-    docker volume rm curso-n8n_postgres_data curso-n8n_redis_data curso-n8n_n8n_data curso-n8n_dify_storage 2>/dev/null || true
 fi
 
-# Remove any orphaned containers, networks, volumes
-docker container prune -f 2>/dev/null || true
-docker network prune -f 2>/dev/null || true
-docker volume prune -f 2>/dev/null || true
+# Clean up any remaining project volumes (in case project name differs)
+log_info "Removing any remaining project volumes..."
+docker volume ls -q --filter "label=com.docker.compose.project=curso-n8n" | xargs -r docker volume rm 2>/dev/null || true
 
 log_success "Cleanup completed"
 
