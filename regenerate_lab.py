@@ -158,20 +158,41 @@ sleep 10
 SERVICES=("postgres" "redis" "n8n" "dify-api" "dify-web" "dify-worker" "docs" "nginx")
 for service in "${SERVICES[@]}"; do
     log_info "Checking $service..."
-    for i in {1..30}; do
+    for i in {1..60}; do
         if docker compose -f "$COMPOSE_FILE" ps "$service" | grep -q "healthy\|Up"; then
             log_success "$service is running"
             break
         fi
-        if [[ $i -eq 30 ]]; then
+        if [[ $i -eq 60 ]]; then
             log_warn "$service may not be fully healthy yet"
         fi
         sleep 2
     done
 done
 
-# Step 11: Verify deployment
-log_info "Step 11: Verifying deployment..."
+# Step 11: Wait for Dify to be fully initialized (setup completion)
+log_info "Step 11: Waiting for Dify initialization..."
+log_info "Dify setup may take 60-120 seconds. Please be patient..."
+
+for i in {1..60}; do
+    # Check if Dify API is responding (setup may return 200 or 201 during init)
+    if curl -sf -o /dev/null --max-time 5 "http://130.117.95.60/dify/console/api/setup" 2>/dev/null; then
+        log_success "Dify initialization detected - setup in progress or complete"
+        sleep 5
+        # Verify Dify is fully up by checking a stable endpoint
+        if curl -sf -o /dev/null --max-time 5 "http://130.117.95.60/dify/console/api/system-features" 2>/dev/null; then
+            log_success "Dify is fully initialized!"
+            break
+        fi
+    fi
+    if [[ $i -eq 60 ]]; then
+        log_warn "Dify setup still in progress - but services are running. Access may work in background."
+    fi
+    sleep 3
+done
+
+# Step 12: Verify deployment
+log_info "Step 12: Verifying deployment..."
 cd "$REMOTE_DIR"
 
 echo ""
@@ -196,20 +217,21 @@ if [[ -z "$LOCAL_IP" ]]; then
 fi
 
 # Step 13: Test endpoints
-log_info "Step 11: Testing endpoints..."
-sleep 5
+log_info "Step 13: Testing endpoints..."
+sleep 10  # Give services more time to fully start
 
+# Use array of "url|name" to avoid colon parsing issues with http://
 ENDPOINTS=(
-    "http://$LOCAL_IP/health:Nginx Health"
-    "http://$LOCAL_IP/n8n/healthz:n8n Health"
-    "http://$LOCAL_IP/dify:Dify Web"
-    "http://$LOCAL_IP/docs/:Documentation"
+    "http://$LOCAL_IP/health|Nginx Health"
+    "http://$LOCAL_IP/n8n/healthz|n8n Health"
+    "http://$LOCAL_IP/dify|Dify Web"
+    "http://$LOCAL_IP/docs/|Documentation"
 )
 
 for endpoint in "${ENDPOINTS[@]}"; do
-    url="${endpoint%%:*}"
-    name="${endpoint##*:}"
-    if curl -sf -o /dev/null --max-time 10 "$url" 2>/dev/null; then
+    url="${endpoint%%|*}"
+    name="${endpoint##*|}"
+    if curl -sf -o /dev/null --max-time 15 "$url" 2>/dev/null; then
         log_success "$name: OK ($url)"
     else
         log_warn "$name: Not responding yet ($url)"
