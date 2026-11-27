@@ -113,6 +113,11 @@ http {
         # ============================================================
         # DIFY - All paths under /dify/ proxied to dify-web backend
         # ============================================================
+        # Exact routes: the Dify Next.js app runs at root behind the container.
+
+
+
+
         location /dify/ {
             proxy_pass http://dify_backend/;
             proxy_http_version 1.1;
@@ -131,176 +136,15 @@ http {
             proxy_redirect http://$host/ /dify/;
             proxy_redirect http://$host:3000/ /dify/;
             proxy_redirect /install /dify/install;
-        }
-
-        # Dify auth endpoints (login, refresh, signin, etc.)
-        location /dify/auth/ {
-            proxy_pass http://dify_backend/auth/;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "upgrade";
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-            proxy_set_header X-Forwarded-Host $host;
-            proxy_set_header X-Forwarded-Prefix /dify;
-            proxy_read_timeout 600s;
-            proxy_send_timeout 600s;
-            
-            # Handle auth redirects to keep them under /dify/
-            proxy_redirect http://$host/auth/ /dify/auth/;
-            proxy_redirect http://$host:3000/auth/ /dify/auth/;
-            proxy_redirect http://$host/signin /dify/signin;
-            proxy_redirect http://$host:3000/signin /dify/signin;
-            proxy_redirect http://$host/signup /dify/signup;
-            proxy_redirect http://$host:3000/signup /dify/signup;
-            # Handle localhost redirects (Dify backend uses localhost)
-            proxy_redirect http://localhost/auth/ /dify/auth/;
-            proxy_redirect http://localhost:3000/auth/ /dify/auth/;
-            proxy_redirect http://localhost/signin /dify/signin;
-            proxy_redirect http://localhost:3000/signin /dify/signin;
-            proxy_redirect http://localhost/signup /dify/signup;
-            proxy_redirect http://localhost:3000/signup /dify/signup;
-            # Handle external IP redirects (Dify backend might use external IP)
-            proxy_redirect http://130.117.95.60/auth/ /dify/auth/;
-            proxy_redirect http://130.117.95.60:3000/auth/ /dify/auth/;
-            proxy_redirect http://130.117.95.60/signin /dify/signin;
-            proxy_redirect http://130.117.95.60:3000/signin /dify/signin;
-            proxy_redirect http://130.117.95.60/signup /dify/signup;
-            proxy_redirect http://130.117.95.60:3000/signup /dify/signup;
-            # Handle relative redirects
+            proxy_redirect /auth/refresh /dify/auth/refresh;
             proxy_redirect /signin /dify/signin;
             proxy_redirect /signup /dify/signup;
-            proxy_redirect /auth/ /dify/auth/;
-            # Handle redirect with query params (e.g., /signin?redirect_url=...)
-            proxy_redirect ~^/signin(.*)$ /dify/signin$1;
-            proxy_redirect ~^/signup(.*)$ /dify/signup$1;
-            proxy_redirect ~^/auth/(.*)$ /dify/auth/$1;
-            # Note: proxy_redirect doesn't support regex with query strings directly
-            # The relative redirect rules above handle the path part
         }
 
-        # Handle /auth/refresh specifically to strip query string and prevent redirect loops
-        location /dify/auth/refresh {
-            proxy_pass http://dify_backend/auth/refresh?;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "upgrade";
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-            proxy_set_header X-Forwarded-Host $host;
-            proxy_set_header X-Forwarded-Prefix /dify;
-            proxy_read_timeout 600s;
-            proxy_send_timeout 600s;
-            
-            # Handle auth redirects to keep them under /dify/
-            proxy_redirect http://$host/auth/ /dify/auth/;
-            proxy_redirect http://$host:3000/auth/ /dify/auth/;
-            proxy_redirect http://$host/signin /dify/signin;
-            proxy_redirect http://$host:3000/signin /dify/signin;
-            proxy_redirect http://$host/signup /dify/signup;
-            proxy_redirect http://$host:3000/signup /dify/signup;
-            proxy_redirect http://localhost/auth/ /dify/auth/;
-            proxy_redirect http://localhost:3000/auth/ /dify/auth/;
-            proxy_redirect http://localhost/signin /dify/signin;
-            proxy_redirect http://localhost:3000/signin /dify/signin;
-            proxy_redirect http://localhost/signup /dify/signup;
-            proxy_redirect http://localhost:3000/signup /dify/signup;
-            proxy_redirect http://130.117.95.60/auth/ /dify/auth/;
-            proxy_redirect http://130.117.95.60:3000/auth/ /dify/auth/;
-            proxy_redirect http://130.117.95.60/signin /dify/signin;
-            proxy_redirect http://130.117.95.60:3000/signin /dify/signin;
-            proxy_redirect http://130.117.95.60/signup /dify/signup;
-            proxy_redirect http://130.117.95.60:3000/signup /dify/signup;
-            proxy_redirect /signin /dify/signin;
-            proxy_redirect /signup /dify/signup;
-            proxy_redirect /auth/ /dify/auth/;
-        }
-
-        # Dify install/setup wizard (redirects from / to /install)
-        location /install {
-            proxy_pass http://dify_backend/install;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "upgrade";
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-            proxy_set_header X-Forwarded-Host $host;
-            proxy_set_header X-Forwarded-Prefix /dify;
-        }
-
-        # Handle /auth/refresh specifically to preserve query string
-        location /auth/refresh {
-            proxy_pass http://dify_backend/auth/refresh?;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "upgrade";
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-            proxy_set_header X-Forwarded-Host $host;
-            proxy_set_header X-Forwarded-Prefix /dify;
-            proxy_read_timeout 600s;
-            proxy_send_timeout 600s;
-            
-            # Handle auth redirects to keep them under /dify/
-            proxy_redirect http://$host/auth/ /dify/auth/;
-            proxy_redirect http://$host:3000/auth/ /dify/auth/;
-            proxy_redirect http://$host/signin /dify/signin;
-            proxy_redirect http://$host:3000/signin /dify/signin;
-            proxy_redirect http://$host/signup /dify/signup;
-            proxy_redirect http://$host:3000/signup /dify/signup;
-            proxy_redirect http://localhost/auth/ /dify/auth/;
-            proxy_redirect http://localhost:3000/auth/ /dify/auth/;
-            proxy_redirect http://localhost/signin /dify/signin;
-            proxy_redirect http://localhost:3000/signin /dify/signin;
-            proxy_redirect http://localhost/signup /dify/signup;
-            proxy_redirect http://localhost:3000/signup /dify/signup;
-            proxy_redirect http://130.117.95.60/auth/ /dify/auth/;
-            proxy_redirect http://130.117.95.60:3000/auth/ /dify/auth/;
-            proxy_redirect http://130.117.95.60/signin /dify/signin;
-            proxy_redirect http://130.117.95.60:3000/signin /dify/signin;
-            proxy_redirect http://130.117.95.60/signup /dify/signup;
-            proxy_redirect http://130.117.95.60:3000/signup /dify/signup;
-            proxy_redirect /signin /dify/signin;
-            proxy_redirect /signup /dify/signup;
-            proxy_redirect /auth/ /dify/auth/;
-        }
-
-        # Handle /auth/refresh specifically to preserve query string and prevent redirect loops
-        
-
-        # Handle /auth/refresh specifically to strip query string and prevent redirect loops
-        
-
-        # Redirect /auth/* to /dify/auth/* for Dify subpath
-        location /auth/ {
-            rewrite ^/auth/(.*)$ /dify/auth/$1 permanent;
-        }
-
-        # Handle client-side redirect from /signin to /dify/signin
-        location /signin {
-            return 307 /dify/signin$is_args$args;
-        }
-
-        location /signup {
-            return 307 /dify/signup$is_args$args;
-        }
-        
-        # Prevent redirect loops by limiting redirect_url parameter depth
-        # If redirect_url contains more than 2 nested redirects, strip to base
-        location /dify/signin {
-            # If redirect_url has more than 3 nested redirects, strip to base to prevent loops
-            if ($arg_redirect_url ~* "redirect_url.*redirect_url.*redirect_url.*redirect_url") {
-                return 307 /dify/signin?redirect_url=%2F;
-            }
-            proxy_pass http://dify_backend/;
+        # Dify authentication and signin routes.
+        # The Dify web container serves its routes at root; nginx exposes them under /dify.
+        location = /dify/signin {
+            proxy_pass http://dify_backend/signin;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
@@ -313,6 +157,52 @@ http {
             proxy_set_header Cookie $http_cookie;
             proxy_read_timeout 600s;
             proxy_send_timeout 600s;
+        }
+
+        location = /dify/auth/refresh {
+            proxy_pass http://dify_backend/auth/refresh;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-Prefix /dify;
+            proxy_set_header Cookie $http_cookie;
+            proxy_redirect /signin /dify/signin;
+            proxy_read_timeout 600s;
+            proxy_send_timeout 600s;
+        }
+
+        location = /dify/install {
+            proxy_pass http://dify_backend/install;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-Prefix /dify;
+            proxy_set_header Cookie $http_cookie;
+            proxy_read_timeout 600s;
+            proxy_send_timeout 600s;
+        }
+
+        # Preserve auth URLs emitted by Dify without passing the loop as a nested redirect.
+        location = /auth/refresh {
+            return 307 /dify/auth/refresh$is_args$args;
+        }
+
+        location = /signin {
+            return 307 /dify/signin$is_args$args;
+        }
+
+        location = /signup {
+            return 307 /dify/signup$is_args$args;
         }
 
         # Dify Console API (browser calls from Dify web UI) - proxied to dify-api
