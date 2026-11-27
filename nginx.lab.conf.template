@@ -155,6 +155,13 @@ http {
             proxy_redirect http://$host:3000/signin /dify/signin;
             proxy_redirect http://$host/signup /dify/signup;
             proxy_redirect http://$host:3000/signup /dify/signup;
+            # Handle localhost redirects (Dify backend uses localhost)
+            proxy_redirect http://localhost/auth/ /dify/auth/;
+            proxy_redirect http://localhost:3000/auth/ /dify/auth/;
+            proxy_redirect http://localhost/signin /dify/signin;
+            proxy_redirect http://localhost:3000/signin /dify/signin;
+            proxy_redirect http://localhost/signup /dify/signup;
+            proxy_redirect http://localhost:3000/signup /dify/signup;
             # Handle relative redirects
             proxy_redirect /signin /dify/signin;
             proxy_redirect /signup /dify/signup;
