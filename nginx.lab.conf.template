@@ -144,23 +144,11 @@ http {
         # Dify authentication and signin routes.
         # The Dify web container serves its routes at root; nginx exposes them under /dify.
         location = /dify/signin {
-            proxy_pass http://dify_backend/signin;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "upgrade";
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-            proxy_set_header X-Forwarded-Host $host;
-            proxy_set_header X-Forwarded-Prefix /dify;
-            proxy_set_header Cookie $http_cookie;
-            proxy_read_timeout 600s;
-            proxy_send_timeout 600s;
+            return 307 /signin$is_args$args;
         }
 
         location = /dify/auth/refresh {
-            proxy_pass http://dify_backend/auth/refresh;
+            proxy_pass http://dify_backend/auth/refresh?;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
@@ -171,7 +159,7 @@ http {
             proxy_set_header X-Forwarded-Host $host;
             proxy_set_header X-Forwarded-Prefix /dify;
             proxy_set_header Cookie $http_cookie;
-            proxy_redirect /signin /dify/signin;
+            proxy_redirect /signin /signin;
             proxy_read_timeout 600s;
             proxy_send_timeout 600s;
         }
@@ -194,11 +182,36 @@ http {
 
         # Preserve auth URLs emitted by Dify without passing the loop as a nested redirect.
         location = /auth/refresh {
-            return 307 /dify/auth/refresh$is_args$args;
+            proxy_pass http://dify_backend/auth/refresh?;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-Prefix /dify;
+            proxy_set_header Cookie $http_cookie;
+            proxy_redirect /signin /signin;
+            proxy_read_timeout 600s;
+            proxy_send_timeout 600s;
         }
 
         location = /signin {
-            return 307 /dify/signin$is_args$args;
+            proxy_pass http://dify_backend/signin;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-Prefix /dify;
+            proxy_set_header Cookie $http_cookie;
+            proxy_read_timeout 600s;
+            proxy_send_timeout 600s;
         }
 
         location = /signup {
