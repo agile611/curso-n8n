@@ -176,15 +176,25 @@ for service in "${SERVICES[@]}"; do
     docker compose -f "$COMPOSE_FILE" logs --tail=20 "$service" 2>/dev/null || true
 done
 
+# Detect the lab server IP (130.117.95.0/24 range)
+LOCAL_IP=$(ip -4 addr show scope global | awk '/130\.117\.95\./ {print $2}' | cut -d/ -f1 | head -1)
+if [[ -z "$LOCAL_IP" ]]; then
+    # Fallback to any global IP
+    LOCAL_IP=$(hostname -I | awk '{print $1}')
+fi
+if [[ -z "$LOCAL_IP" ]]; then
+    LOCAL_IP=$(ip route get 1.1.1.1 | awk '{print $7; exit}')
+fi
+
 # Step 11: Test endpoints
 log_info "Step 11: Testing endpoints..."
 sleep 5
 
 ENDPOINTS=(
-    "http://130.117.95.60/health:Nginx Health"
-    "http://130.117.95.60/n8n/healthz:n8n Health"
-    "http://130.117.95.60/dify:Dify Web"
-    "http://130.117.95.60/docs/:Documentation"
+    "http://$LOCAL_IP/health:Nginx Health"
+    "http://$LOCAL_IP/n8n/healthz:n8n Health"
+    "http://$LOCAL_IP/dify:Dify Web"
+    "http://$LOCAL_IP/docs/:Documentation"
 )
 
 for endpoint in "${ENDPOINTS[@]}"; do
@@ -199,11 +209,11 @@ done
 
 echo ""
 log_success "=== Lab Environment Regeneration Complete ==="
-log_info "Access points:"
-log_info "  - n8n:       http://130.117.95.60/n8n/ (admin / n8n_lab_2026)"
-log_info "  - Dify:      http://130.117.95.60/dify/"
-log_info "  - Docs:      http://130.117.95.60/docs/"
-log_info "  - Nginx:     http://130.117.95.60/health"
+log_info "Access points (detected IP: $LOCAL_IP):"
+log_info "  - n8n:       http://$LOCAL_IP/n8n/ (admin / n8n_lab_2026)"
+log_info "  - Dify:      http://$LOCAL_IP/dify/"
+log_info "  - Docs:      http://$LOCAL_IP/docs/"
+log_info "  - Nginx:     http://$LOCAL_IP/health"
 echo ""
 log_info "To view logs: cd $REMOTE_DIR && docker compose -f $COMPOSE_FILE logs -f [service]"
 log_info "To stop:      cd $REMOTE_DIR && docker compose -f $COMPOSE_FILE down"
