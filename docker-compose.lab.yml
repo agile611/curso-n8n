@@ -137,8 +137,8 @@ services:
   dify-web:
     image: langgenius/dify-web:latest
     environment:
-      # API URL: apunta directamente al contenedor dify-api (red interna docker)
-      CONSOLE_API_URL: "http://dify-api:5001"
+      # API URL: URL externa accesible desde el navegador (puerto 5001)
+      CONSOLE_API_URL: "http://${LAB_HOST:-130.117.95.60}:5001"
       # CONSOLE_WEB_URL: URL pública directa al web UI (puerto 8080)
       CONSOLE_WEB_URL: "http://${LAB_HOST:-130.117.95.60}:8080"
       # BASE_PATH vacío porque ya no está bajo subpath /dify
