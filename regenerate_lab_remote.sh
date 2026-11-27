@@ -1,7 +1,7 @@
 #!/bin/bash
 # Lab Environment Regeneration Script for Curso n8n
-# Run this script DIRECTLY on the remote server (130.117.95.60) as root
-# Usage: sudo bash regenerate_lab_remote.sh
+# Run on the lab server (130.117.95.60) as the 'curso' user
+# Usage: bash regenerate_lab_remote.sh
 
 set -euo pipefail
 
@@ -17,68 +17,56 @@ log_success() { echo -e "${GREEN}[SUCCESS]${NC} $*"; }
 log_warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $*"; }
 
-# Configuration
+# Configuration - runs from current directory (/home/curso/curso-n8n)
 REPO_URL="https://github.com/agile611/curso-n8n.git"
-REMOTE_DIR="/opt/curso-n8n"
+REMOTE_DIR="$(pwd)"
 COMPOSE_FILE="docker-compose.lab.yml"
 ENV_FILE=".env.lab"
 
-# Check if running as root
-if [[ $EUID -ne 0 ]]; then
-    log_error "This script must be run as root (sudo)"
-    exit 1
-fi
-
 log_info "=== Starting Lab Environment Regeneration ==="
 log_info "Target directory: $REMOTE_DIR"
+log_info "Running as user: $(whoami)"
+
+# Verify Docker is available (should be pre-installed on lab server)
+if ! command -v docker &>/dev/null; then
+    log_error "Docker not found. Please install Docker first."
+    exit 1
+fi
+if ! docker compose version &>/dev/null; then
+    log_error "Docker Compose not found. Please install Docker Compose plugin."
+    exit 1
+fi
+log_success "Docker and Docker Compose are available"
+
+# Verify user is in docker group
+if ! groups | grep -q docker; then
+    log_warn "User '$(whoami)' is not in 'docker' group. Docker commands may fail."
+    log_warn "Run: sudo usermod -aG docker $(whoami) && newgrp docker"
+fi
 
 # Step 1: Clean up existing deployment
 log_info "Step 1: Cleaning up existing deployment..."
-cd "$REMOTE_DIR" 2>/dev/null || true
+cd "$REMOTE_DIR"
 
-# Stop and remove containers, networks, volumes
+# Stop and remove containers, networks, volumes (based on docker-compose.lab.yml)
 if [[ -f "$COMPOSE_FILE" ]]; then
-    log_info "Stopping existing containers..."
+    log_info "Stopping and removing all containers, networks, and volumes..."
     docker compose -f "$COMPOSE_FILE" down -v --remove-orphans 2>/dev/null || true
+    
+    # Explicitly remove named volumes from docker-compose.lab.yml
+    log_info "Removing named volumes: postgres_data, redis_data, n8n_data, dify_storage..."
+    docker volume rm curso-n8n_postgres_data curso-n8n_redis_data curso-n8n_n8n_data curso-n8n_dify_storage 2>/dev/null || true
 fi
 
-# Remove any orphaned containers
+# Remove any orphaned containers, networks, volumes
 docker container prune -f 2>/dev/null || true
 docker network prune -f 2>/dev/null || true
 docker volume prune -f 2>/dev/null || true
 
 log_success "Cleanup completed"
 
-# Step 2: Install Docker and Docker Compose if not present
-log_info "Step 2: Ensuring Docker and Docker Compose are installed..."
-if ! command -v docker &>/dev/null; then
-    log_info "Installing Docker..."
-    curl -fsSL https://get.docker.com | sh
-    systemctl enable --now docker
-    log_success "Docker installed"
-else
-    log_info "Docker already installed"
-fi
-
-if ! command -v docker compose &>/dev/null && ! docker compose version &>/dev/null; then
-    log_info "Installing Docker Compose plugin..."
-    apt-get update && apt-get install -y docker-compose-plugin
-    log_success "Docker Compose plugin installed"
-else
-    log_info "Docker Compose already available"
-fi
-
-# Step 3: Install git if not present
-log_info "Step 3: Ensuring git is installed..."
-if ! command -v git &>/dev/null; then
-    apt-get update && apt-get install -y git
-    log_success "Git installed"
-else
-    log_info "Git already installed"
-fi
-
-# Step 4: Clone or update repository
-log_info "Step 4: Setting up repository..."
+# Step 2: Clone or update repository
+log_info "Step 2: Setting up repository..."
 if [[ -d "$REMOTE_DIR/.git" ]]; then
     log_info "Repository exists, updating..."
     cd "$REMOTE_DIR"
@@ -87,15 +75,13 @@ if [[ -d "$REMOTE_DIR/.git" ]]; then
     git clean -fd
 else
     log_info "Cloning repository..."
-    mkdir -p "$REMOTE_DIR"
-    cd "$REMOTE_DIR"
     git clone "$REPO_URL" .
 fi
 
 log_success "Repository ready at $REMOTE_DIR"
 
-# Step 5: Create .env.lab file with production values
-log_info "Step 5: Creating environment file..."
+# Step 3: Create .env.lab file with production values
+log_info "Step 3: Creating environment file..."
 cat > "$REMOTE_DIR/$ENV_FILE" << 'ENV_EOF'
 LAB_HOST=130.117.95.60
 POSTGRES_PASSWORD=n8n_lab_2026
@@ -108,27 +94,27 @@ ENV_EOF
 chmod 600 "$REMOTE_DIR/$ENV_FILE"
 log_success "Environment file created"
 
-# Step 6: Ensure init-multiple-dbs.sh is executable
-log_info "Step 6: Setting up database initialization script..."
+# Step 4: Ensure init-multiple-dbs.sh is executable
+log_info "Step 4: Setting up database initialization script..."
 chmod +x "$REMOTE_DIR/init-multiple-dbs.sh"
 log_success "Database init script ready"
 
-# Step 7: Pull latest Docker images
-log_info "Step 7: Pulling latest Docker images..."
+# Step 5: Pull latest Docker images
+log_info "Step 5: Pulling latest Docker images..."
 cd "$REMOTE_DIR"
 docker compose -f "$COMPOSE_FILE" pull
 log_success "Images pulled"
 
-# Step 8: Start services
-log_info "Step 8: Starting all services..."
+# Step 6: Start services
+log_info "Step 6: Starting all services..."
 cd "$REMOTE_DIR"
 docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d
 
-# Step 9: Wait for services to be healthy
-log_info "Step 9: Waiting for services to become healthy..."
+# Step 7: Wait for services to be healthy
+log_info "Step 7: Waiting for services to become healthy..."
 sleep 10
 
-# Check service health
+# Check service health (services from docker-compose.lab.yml)
 SERVICES=("postgres" "redis" "n8n" "dify-api" "dify-web" "dify-worker" "docs" "nginx")
 for service in "${SERVICES[@]}"; do
     log_info "Checking $service..."
@@ -144,8 +130,8 @@ for service in "${SERVICES[@]}"; do
     done
 done
 
-# Step 10: Verify deployment
-log_info "Step 10: Verifying deployment..."
+# Step 8: Verify deployment
+log_info "Step 8: Verifying deployment..."
 cd "$REMOTE_DIR"
 
 echo ""
@@ -159,8 +145,8 @@ for service in "${SERVICES[@]}"; do
     docker compose -f "$COMPOSE_FILE" logs --tail=20 "$service" 2>/dev/null || true
 done
 
-# Step 11: Test endpoints
-log_info "Step 11: Testing endpoints..."
+# Step 9: Test endpoints
+log_info "Step 9: Testing endpoints..."
 sleep 5
 
 ENDPOINTS=(

@@ -54,13 +54,17 @@ log_info "Target directory: $REMOTE_DIR"
 log_info "Step 1: Cleaning up existing deployment..."
 cd "$REMOTE_DIR" 2>/dev/null || true
 
-# Stop and remove containers, networks, volumes
+# Stop and remove containers, networks, volumes (based on docker-compose.lab.yml)
 if [[ -f "$COMPOSE_FILE" ]]; then
-    log_info "Stopping existing containers..."
+    log_info "Stopping and removing all containers, networks, and volumes..."
     docker compose -f "$COMPOSE_FILE" down -v --remove-orphans 2>/dev/null || true
+    
+    # Explicitly remove named volumes from docker-compose.lab.yml
+    log_info "Removing named volumes: postgres_data, redis_data, n8n_data, dify_storage..."
+    docker volume rm curso-n8n_postgres_data curso-n8n_redis_data curso-n8n_n8n_data curso-n8n_dify_storage 2>/dev/null || true
 fi
 
-# Remove any orphaned containers
+# Remove any orphaned containers, networks, volumes
 docker container prune -f 2>/dev/null || true
 docker network prune -f 2>/dev/null || true
 docker volume prune -f 2>/dev/null || true
