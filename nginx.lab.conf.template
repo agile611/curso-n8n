@@ -200,6 +200,15 @@ http {
             rewrite ^/auth/(.*)$ /dify/auth/$1 permanent;
         }
 
+        # Handle client-side redirect from /signin to /dify/signin
+        location /signin {
+            return 307 /dify/signin$is_args$args;
+        }
+
+        location /signup {
+            return 307 /dify/signup$is_args$args;
+        }
+
         # Dify Console API (browser calls from Dify web UI) - proxied to dify-api
         location /dify/console/api/ {
             proxy_pass http://dify_api_backend/console/api/;
