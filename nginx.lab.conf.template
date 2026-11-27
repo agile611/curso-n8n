@@ -300,8 +300,8 @@ http {
             if ($arg_redirect_url ~* "redirect_url.*redirect_url.*redirect_url.*redirect_url") {
                 return 307 /dify/signin?redirect_url=%2F;
             }
-            # Strip query string to prevent redirect loops - use trailing ? in proxy_pass
-            proxy_pass http://dify_backend/?;
+            # Preserve query string to prevent redirect loops
+            proxy_pass http://dify_backend/;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
@@ -326,6 +326,8 @@ http {
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
             proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header Cookie $http_cookie;
+            proxy_set_header X-Forwarded-Cookie $http_cookie;
             proxy_read_timeout 600s;
             proxy_send_timeout 600s;
         }
