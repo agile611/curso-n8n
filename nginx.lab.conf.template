@@ -255,12 +255,14 @@ http {
         # If redirect_url contains more than 2 nested redirects, strip to base
         location /dify/signin {
             # Strip redirect_url parameter if it contains more than 2 nested redirects to prevent loops
-            if ($arg_redirect_url ~* "redirect_url.*redirect_url.*redirect_url") {
-                return 307 /dify/signin?redirect_url=%2F;
-            }
-            # If redirect_url has more than 2 nested redirects, strip to base
+            # If redirect_url has more than 3 nested redirects, strip to base to prevent loops
             if ($arg_redirect_url ~* "redirect_url.*redirect_url.*redirect_url.*redirect_url") {
                 return 307 /dify/signin?redirect_url=%2F;
+            }
+            # Strip redirect_url parameter when proxying to backend to prevent loops
+            set $signin_args $args;
+            if ($arg_redirect_url) {
+                set $signin_args "";
             }
             proxy_pass http://dify_backend/;
             proxy_http_version 1.1;
@@ -274,8 +276,9 @@ http {
             proxy_set_header X-Forwarded-Prefix /dify;
             proxy_read_timeout 600s;
             proxy_send_timeout 600s;
-            # Strip redirect_url parameter when proxying to backend to prevent loops
+            # Strip query string when proxying to backend to prevent redirect loops
             proxy_set_header X-Original-URI $request_uri;
+            proxy_set_header X-Forwarded-Query $signin_args;
         }
 
         # Dify Console API (browser calls from Dify web UI) - proxied to dify-api
