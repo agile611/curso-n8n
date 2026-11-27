@@ -14,7 +14,7 @@
 | **n8n Webhooks** | `http://<IP_DE_TU_SERVIDOR>/n8n/webhook/` | - |
 | **Dify API** | `http://<IP_DE_TU_SERVIDOR>/console/api/` | `Bearer <APP_API_KEY>` |
 
-> ⚠️ **Dify primera vez**: Al abrir `http://<IP_DE_TU_SERVIDOR>/dify/` verás "Dify has not been initialized". Es normal → Completa el Setup Wizard en `/dify/install` (ver [Guía Laboratorios §0.6](guia_laboratorios_ubuntu24.md#06-dify-configuración-inicial-obligatoria-setup-wizard))
+> ⚠️ **Dify primera vez**: Al abrir `http://<IP_DE_TU_SERVIDOR>/dify/` el navegador termina en `http://<IP_DE_TU_SERVIDOR>/signin?redirect_url=%2F` si no hay sesión iniciada. Completa el Setup Wizard en `/dify/install` (ver [Guía Laboratorios §0.6](guia_laboratorios_ubuntu24.md)). No debe aparecer ningún bucle `redirect_url=redirect_url=...`.
 
 > 💡 **IP del servidor**: Configurada en `.env.lab` como `LAB_HOST=<IP_DE_TU_SERVIDOR>` (ej. `192.168.1.100`). nginx usa `envsubst` para sustituir `${LAB_HOST}` en la configuración.
 

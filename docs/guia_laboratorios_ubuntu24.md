@@ -138,6 +138,30 @@ curl -s http://localhost/console/api/init
 curl -s http://localhost/dify/ | grep -c '__next_error__' && echo "Setup pendiente" || echo "Dify OK"
 ```
 
+#### Comportamiento esperado en el navegador (comprobación client-side)
+
+Al abrir `http://<IP_DE_TU_SERVIDOR>/dify/` sin una sesión Dify iniciada, el navegador debe terminar en:
+
+```text
+http://<IP_DE_TU_SERVIDOR>/signin?redirect_url=%2F
+```
+
+Esta URL es correcta. Dify usa una ruta raíz `/<lang>/signin` internamente; nginx reenvía esa ruta al backend y mantiene las APIs bajo `/dify/console/api/`.
+
+> ⚠️ **Antes de iniciar sesión no debe aparecer ningún bucle infinito ni una URL con `redirect_url` encadenado varias veces.** El resultado esperado es una sola página de login con:
+> - Campo `Email`
+> - Campo `Password`
+> - Botón `Sign in`
+
+Durante la carga del login es normal ver respuestas `401` en:
+
+```text
+/dify/console/api/account/profile
+/dify/console/api/refresh-token
+```
+
+Esas respuestas indican que todavía no existe una sesión válida. No son un error de redirección. Después de iniciar sesión, el navegador debe recibir cookies de Dify y navegar al dashboard sin volver a `/signin`.
+
 ### 0.7 🔧 Fixes Aplicados (Troubleshooting Común)
 
 Si encuentras problemas durante la instalación, estos son los fixes ya aplicados en el repositorio:

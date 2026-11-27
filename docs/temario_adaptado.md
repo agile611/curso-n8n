@@ -76,8 +76,10 @@ docker-compose -f docker-compose.lab.yml ps
 # - n8n: http://<IP_DE_TU_SERVIDOR>/n8n/ (admin / n8n_lab_2026)
 # - Dify: http://<IP_DE_TU_SERVIDOR>/dify/ (admin@lab.local / dify_lab_2026)
 
-> ⚠️ **Dify primera vez**: Al abrir `http://<IP_DE_TU_SERVIDOR>/dify/` verás *"Dify has not been initialized..."*. **Es normal** → Completa el Setup Wizard en `/dify/install` (crear admin, workspace, skip model provider si no tienes API Key). Ver [Guía Laboratorios §0.6](../guia_laboratorios_ubuntu24.md#06-dify-configuración-inicial-obligatoria-setup-wizard)
+> ⚠️ **Dify primera vez**: Al abrir `http://<IP_DE_TU_SERVIDOR>/dify/` verás *"Dify has not been initialized..."*. **Es normal** → Completa el Setup Wizard en `/dify/install` (crear admin, workspace, skip model provider si no tienes API Key). Ver [Guía Laboratorios §0.6](../guia_laboratorios_ubuntu24.md)
 ```
+
+> 🌐 **Comportamiento client-side esperado**: sin sesión iniciada, Dify termina en `/signin?redirect_url=%2F`. Las respuestas `401` de `account/profile` y `refresh-token` son normales antes del login. No debe existir una cadena `redirect_url=redirect_url=redirect_url=...`.
 
 ### Fixes Aplicados (Troubleshooting Común)
 

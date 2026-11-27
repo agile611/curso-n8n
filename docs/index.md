@@ -8,7 +8,7 @@
 
 **Antes de empezar el Módulo 1**, necesitas el entorno funcionando en la máquina Ubuntu 24.04 del laboratorio.
 
-> 📖 **Guía completa**: [Guía Laboratorios Ubuntu 24.04](guia_laboratorios_ubuntu24.md#0-preparación-del-entorno-pre-curso)
+> 📖 **Guía completa**: [Guía Laboratorios Ubuntu 24.04](guia_laboratorios_ubuntu24.md)
 
 ### Resumen rápido (ejecutar en el servidor de lab)
 
@@ -47,9 +47,11 @@ docker-compose -f docker-compose.lab.yml ps
 | **n8n** | `http://<IP_DE_TU_SERVIDOR>/n8n/` | `admin` / `n8n_lab_2026` |
 | **Dify** | `http://<IP_DE_TU_SERVIDOR>/dify/` | `admin@lab.local` / `dify_lab_2026` |
 
-> 🔔 **Dify primera vez**: Al abrir `http://<IP_DE_TU_SERVIDOR>/dify/` verás *"Dify has not been initialized..."*. **Es normal** → Completa el [Setup Wizard](guia_laboratorios_ubuntu24.md#06-dify-configuración-inicial-obligatoria-setup-wizard) (crear admin, workspace, skip model provider si no tienes API Key).
+> 🔔 **Dify primera vez**: Al abrir `http://<IP_DE_TU_SERVIDOR>/dify/` verás *"Dify has not been initialized..."*. **Es normal** → Completa el [Setup Wizard](guia_laboratorios_ubuntu24.md) (crear admin, workspace, skip model provider si no tienes API Key).
 
-> 🔧 **Fixes ya aplicados**: n8n secure cookie, PostgreSQL idempotente, Dify OOM, API URL via nginx, static assets, setup wizard, IP dinámica con LAB_HOST. Ver [Guía Laboratorios §0.7](guia_laboratorios_ubuntu24.md#07-fixes-aplicados-troubleshooting-común).
+> 🌐 **Comportamiento esperado del navegador**: sin sesión iniciada, Dify termina en `http://<IP_DE_TU_SERVIDOR>/signin?redirect_url=%2F`. Una página de login estable sin bucles de `redirect_url` indica que la ruta está correcta.
+
+> 🔧 **Fixes ya aplicados**: n8n secure cookie, PostgreSQL idempotente, Dify OOM, API URL via nginx, static assets, setup wizard, IP dinámica con LAB_HOST. Ver [Guía Laboratorios §0.7](guia_laboratorios_ubuntu24.md).
 
 ---
 
