@@ -141,8 +141,20 @@ log_info "Step 8: Starting all services..."
 cd "$REMOTE_DIR"
 docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d
 
-# Step 9: Wait for services to be healthy
-log_info "Step 9: Waiting for services to become healthy..."
+# Step 9: Run Dify database migrations
+log_info "Step 9: Running Dify database migrations..."
+sleep 15  # Wait for PostgreSQL to be fully ready
+
+# Try different migration commands (Dify uses Flask-Migrate/Alembic)
+log_info "Attempting Dify migrations..."
+docker compose -f "$COMPOSE_FILE" run --rm dify-api python -m flask db upgrade 2>/dev/null || \
+docker compose -f "$COMPOSE_FILE" run --rm dify-api flask db upgrade 2>/dev/null || \
+docker compose -f "$COMPOSE_FILE" run --rm dify-api python manage.py db upgrade 2>/dev/null || \
+docker compose -f "$COMPOSE_FILE" run --rm dify-api alembic upgrade head 2>/dev/null || \
+log_warn "Migration command not found or already applied - continuing..."
+
+# Step 10: Wait for services to be healthy
+log_info "Step 10: Waiting for services to become healthy..."
 sleep 10
 
 # Check service health
@@ -161,8 +173,8 @@ for service in "${SERVICES[@]}"; do
     done
 done
 
-# Step 10: Verify deployment
-log_info "Step 10: Verifying deployment..."
+# Step 11: Verify deployment
+log_info "Step 11: Verifying deployment..."
 cd "$REMOTE_DIR"
 
 echo ""
@@ -186,7 +198,7 @@ if [[ -z "$LOCAL_IP" ]]; then
     LOCAL_IP=$(ip route get 1.1.1.1 | awk '{print $7; exit}')
 fi
 
-# Step 11: Test endpoints
+# Step 13: Test endpoints
 log_info "Step 11: Testing endpoints..."
 sleep 5
 
