@@ -24,4 +24,4 @@ curl -L "https://github.com/docker/compose/releases/download/v5.8.1/docker-compo
     chmod +x /usr/local/bin/docker-compose
 
 # Add vagrant user to docker group
-usermod -G docker curso
+sudo usermod -aG docker curso && newgrp docker
