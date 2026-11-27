@@ -159,6 +159,10 @@ http {
             proxy_redirect /signin /dify/signin;
             proxy_redirect /signup /dify/signup;
             proxy_redirect /auth/ /dify/auth/;
+            # Handle redirect with query params (e.g., /signin?redirect_url=...)
+            proxy_redirect ~^/signin(.*)$ /dify/signin$1;
+            proxy_redirect ~^/signup(.*)$ /dify/signup$1;
+            proxy_redirect ~^/auth/(.*)$ /dify/auth/$1;
         }
 
         # Dify install/setup wizard (redirects from / to /install)
