@@ -10,9 +10,32 @@ Al finalizar, los participantes habrán:
 
 - Construido un **prototipo integrado end-to-end** combinando n8n + Dify + RAG + Agentes
 - Aplicado **todos los conceptos** del curso: automatización determinista, IA, seguridad, observabilidad, gobernanza
-- Validado el prototipo contra **casos normales, edge cases y fallos**
+- Validado el prototipo contra **casos normales, casos límite y fallos**
 - Identificado **riesgos, deuda técnica y siguientes pasos** para piloto controlado
-- Presentado la solución a "stakeholders" (resto de la clase) con evidencia
+- Presentado la solución al resto de participantes y al facilitador con evidencia
+
+---
+
+### Lab 9.1 - Construir el prototipo integrado Dify + n8n
+
+> **Duración:** 120 min | **Objetivo:** Integrar recepción, análisis, decisión y registro en un mínimo viable controlado.
+
+#### Preparación
+
+- Reutiliza las aplicaciones y workflows construidos en los laboratorios anteriores.
+- Trabaja únicamente con datos ficticios y servicios simulados.
+- Antes de iniciar, confirma que n8n y Dify son accesibles desde el entorno del curso.
+
+#### Resultado esperado
+
+El prototipo debe recibir una alerta, enriquecerla, consultar el análisis de Dify, aplicar el control de seguridad y ejecutar o registrar una acción conforme al resultado.
+
+#### Entregable
+
+- Workflow exportado de n8n
+- Workflow o aplicación exportada de Dify
+- Documento breve con arquitectura, datos de entrada y decisiones de control
+- Evidencia de al menos un caso correcto y un caso de error
 
 ---
 
@@ -41,7 +64,7 @@ Al finalizar, los participantes habrán:
 > 5. **Ejecutar** acción con aprobación si requerida
 > 6. **Registrar** todo para auditoría y mejora continua
 
-### Arquitectura objetivo (Target State)
+### Arquitectura objetivo
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────┐
@@ -334,7 +357,7 @@ DEFAULT:
 
 #### Test Cases a ejecutar (mínimo 5)
 
-| # | Alerta | Expected Flow | Validación |
+| # | Alerta | Flujo esperado | Validación |
 |---|--------|---------------|------------|
 | 1 | `PodOOMKilled` critical, prod, recent deploy | Enrich → Dify P1 → restart_pod → Approval → Execute → Ticket + Slack | Approval requested, executed, verified |
 | 2 | `HighCPU` warning, staging, no deploy | Enrich → Dify P3 → create_ticket (no approval) → Slack | Ticket created, no approval |
@@ -345,6 +368,28 @@ DEFAULT:
 ---
 
 ## 9.3 Validación, presentación y siguientes pasos
+
+### Lab 9.2 - Validar, presentar riesgos y definir siguientes pasos
+
+> **Duración:** 75 min | **Objetivo:** Demostrar el funcionamiento, comprobar los controles y decidir qué falta para un piloto.
+
+#### Procedimiento
+
+1. Ejecuta los casos normales, incompletos y de error definidos en el laboratorio.
+2. Contrasta el resultado obtenido con el resultado esperado.
+3. Revisa los controles de seguridad, aprobación y trazabilidad.
+4. Prepara una demostración breve de dos casos.
+5. Expón los riesgos, la deuda técnica y las condiciones necesarias para continuar.
+
+#### Criterios de aceptación
+
+- [ ] Se han ejecutado y documentado casos normales, incompletos y de error.
+- [ ] Las acciones de producción simuladas pasan por el control de aprobación correspondiente.
+- [ ] Las respuestas se validan antes de su consumo por otros sistemas.
+- [ ] El prototipo genera una evidencia correlacionable de principio a fin.
+- [ ] La presentación identifica riesgos y siguientes pasos sin atribuirle preparación productiva al prototipo.
+
+---
 
 ### Validación guiada (45 min)
 
@@ -363,12 +408,12 @@ DEFAULT:
 | **Ejecución** | Action ejecutada (mock) → Resultado verificado | ☐ | Execution result |
 | **Auditoría** | Audit log completo en endpoint | ☐ | Audit API response |
 | **Notificación** | Slack mensaje correcto por canal | ☐ | Slack channel |
-| **Trazabilidad** | Correlation ID en TODO (logs, audit, Slack) | ☐ | Buscar en Loki |
+| **Trazabilidad** | Correlation ID presente en logs, auditoría y Slack | ☐ | Buscar en Loki |
 | **Error Handling** | Dify timeout → Fallback → Continue | ☐ | Simular delay 70s |
 | **Error Handling** | Jira API down → Queue + Alert | ☐ | Simular 503 |
 | **Rendimiento** | Latencia E2E < 30s (P95) | ☐ | 5 ejecuciones |
 
-#### Ground Truth para validación (Clave de respuestas)
+#### Respuestas esperadas para la validación
 
 ```json
 // test-ground-truth.json

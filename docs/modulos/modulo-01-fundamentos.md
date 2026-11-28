@@ -223,7 +223,7 @@ Para cada escenario, decidid qué herramienta usar y justificad:
 | **Conectores técnicos** | ✅ HTTP genérico, DB, SSH | ⚠️ Via tools/API | ✅ 1000+ SaaS |
 | **IA/RAG nativo** | ❌ (custom) | ✅ Core del producto | ⚠️ Módulos básicos |
 
-> � **Nota:** "En entornos corporativos con requisitos de soberanía de datos → **n8n + Dify self-hosted** es la combinación ganadora."
+> 📝 **Nota:** "En entornos corporativos con requisitos de soberanía de datos, el despliegue **n8n + Dify self-hosted** puede facilitar el control de la información."
 
 ### Revisión de entornos de laboratorio y datos ficticios autorizados
 
@@ -259,7 +259,7 @@ curl -s https://dify.lab.tuempresa.com/health   # → {"status":"ok"}
 |---------|------------|---------------|----------|---------|----------------------|-------------------|
 | Ej: Onboarding VM | 3/semana | 45 min | Ticket, specs | VM lista, DNS, monitoring | vCenter, Infoblox, Datadog, CMDB | 4 |
 
-#### Criterios de candidatazión (puntuad 1-5)
+#### Criterios de selección (puntuad 1-5)
 
 - [ ] **Repetitivo** (se hace igual cada vez)
 - [ ] **Basado en reglas** (decisiones SÍ/NO claras)

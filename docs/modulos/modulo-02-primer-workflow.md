@@ -769,7 +769,7 @@ Slack - Notify Result
 // False → Continue directly
 ```
 
-> � **Nota:** "El nodo `Wait` en n8n permite pausar ejecución hasta webhook externo. Usad un 2º Manual Trigger o webhook.site para simular la aprobación."
+> 📝 **Nota:** "El nodo `Wait` en n8n permite pausar una ejecución hasta recibir una aprobación externa. Usad un segundo `Manual Trigger` o un webhook de prueba para simular la aprobación."
 
 ---
 

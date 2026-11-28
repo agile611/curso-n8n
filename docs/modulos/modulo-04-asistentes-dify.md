@@ -87,7 +87,7 @@ Clasificar alertas de monitoring, enriquecer con contexto operativo y recomendar
 }
 ```
 
-> � **Nota:** "Este prompt es **el contrato**. Cualquier cambio = nueva versión. Guardad versiones en Git."
+> 📝 **Nota:** "Este prompt actúa como un contrato de comportamiento. Cualquier cambio requiere una nueva versión y debe quedar registrado en Git."
 
 ### Uso de contexto, restricciones y criterios de aceptación
 
@@ -238,7 +238,7 @@ END (output: final_json)
 | **JSON inválido** | Texto no JSON | Error 400: "JSON inválido" | |
 | **Campos extra** | Alerta + 50 campos extra | Ignora extra, procesa conocidos | |
 
-> � **Nota:** "Ejecutad esta matriz **cada vez que cambiéis el prompt**. Automatizad con script si posible."
+> 📝 **Nota:** "Ejecutad esta matriz después de cada cambio relevante en el prompt. Si el proceso se repite con frecuencia, automatizad las pruebas."
 
 ### Evaluación de respuestas y ajuste del prompt
 
