@@ -96,6 +96,7 @@ extra_javascript:
 
 nav:
   - "Inicio": index.md
+  - "Temario": temario_adaptado.md
   - "Fundamentos":
     - "Módulo 1: Fundamentos": modulos/modulo-01-fundamentos.md
     - "Módulo 2: Primer workflow con n8n": modulos/modulo-02-primer-workflow.md
@@ -109,5 +110,12 @@ nav:
     - "Módulo 8: Operación y ciclo de vida": modulos/modulo-08-operacion-ciclo-vida.md
   - "Proyecto Final":
     - "Módulo 9: Caso práctico final": modulos/modulo-09-caso-final.md
+  - "Laboratorios":
+    - "Guía Ubuntu 24.04": guia_laboratorios_ubuntu24.md
+  - "Plantillas y operación":
+    - "Documentación de workflows": workflow_doc_template.md
+    - "Política de seguridad mínima": security_policy_template.md
+    - "Despliegue": deploy.md
+    - "Referencia rápida": quick_reference.md
   - "Glosario": glosario.md
   - "Recursos": recursos.md

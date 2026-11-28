@@ -9,7 +9,7 @@
 | Módulo Original (Temario) | Horas | Módulo en Docs | Archivo | Estado |
 |---------------------------|-------|----------------|---------|--------|
 | 1. Fundamentos de automatización y agentes sin código | 2h | **Módulo 1** | `modulo-01-fundamentos.md` | ✅ Completo |
-| 2. Primer workflow práctico con n8n | 2h | **Módulo 2** | `modulo-02-fundamentos.md` | ✅ Completo |
+| 2. Primer workflow práctico con n8n | 2h | **Módulo 2** | `modulo-02-primer-workflow.md` | ✅ Completo |
 | 3. Eventos, webhooks e integración con sistemas | 2h | **Módulo 3** | `modulo-03-eventos-webhooks.md` | ✅ Completo |
 | 4. Asistentes y workflows de IA con Dify | 2h | **Módulo 4** | `modulo-04-asistentes-dify.md` | ✅ Completo |
 | 5. RAG y bases de conocimiento para documentación técnica | 2h | **Módulo 5** | `modulo-05-rag-conocimiento.md` | ✅ Completo |
@@ -76,7 +76,7 @@ docker compose -f docker-compose.lab.yml ps
 # - n8n: http://<IP_DE_TU_SERVIDOR>/n8n/ (admin / n8n_lab_2026)
 # - Dify: http://<IP_DE_TU_SERVIDOR>/dify/ (admin@lab.local / dify_lab_2026)
 
-> ⚠️ **Dify primera vez**: Al abrir `http://<IP_DE_TU_SERVIDOR>/dify/` verás *"Dify has not been initialized..."*. **Es normal** → Completa el Setup Wizard en `/dify/install` (crear admin, workspace, skip model provider si no tienes API Key). Ver [Guía Laboratorios §0.6](../guia_laboratorios_ubuntu24.md)
+> ⚠️ **Dify primera vez**: Al abrir `http://<IP_DE_TU_SERVIDOR>/dify/` verás *"Dify has not been initialized..."*. **Es normal** → Completa el Setup Wizard en `/dify/install` (crear admin, workspace y omitir el proveedor de modelo si no tienes una API key). Ver [Guía Laboratorios §0.6](guia_laboratorios_ubuntu24.md#06-dify-configuracion-inicial-obligatoria-setup-wizard).
 ```
 
 > 🌐 **Comportamiento client-side esperado**: sin sesión iniciada, Dify termina en `/signin?redirect_url=%2F`. Las respuestas `401` de `account/profile` y `refresh-token` son normales antes del login. No debe existir una cadena `redirect_url=redirect_url=redirect_url=...`.

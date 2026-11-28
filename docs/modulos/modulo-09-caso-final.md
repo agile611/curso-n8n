@@ -621,4 +621,4 @@ git checkout v1.1.1 -- workflows/alert-classification/workflow.json
 ---
 
 *Fin del Curso: Automatización y agentes sin código para perfiles técnicos*
-*Versión 1.0 - Generado 2026-01-15*
+*Versión 1.0 - Actualizado 2026-11-28*

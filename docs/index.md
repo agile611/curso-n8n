@@ -65,11 +65,11 @@ watch docker compose -f docker-compose.lab.yml ps
 | **n8n** | `http://<IP_DE_TU_SERVIDOR>/n8n/` | `admin` / `n8n_lab_2026` |
 | **Dify** | `http://<IP_DE_TU_SERVIDOR>:8080` | `admin@lab.local` / `dify_lab_2026` |
 
-> 🔔 **Dify primera vez**: Al abrir `http://<IP_DE_TU_SERVIDOR>:8080` verás *"Dify has not been initialized..."*. **Es normal** → Completa el [Setup Wizard](guia_laboratorios_ubuntu24.md#06-dify-configuración-inicial-obligatoria-setup-wizard) (crear admin, workspace, skip model provider si no tienes API Key).
+> 🔔 **Dify primera vez**: Al abrir `http://<IP_DE_TU_SERVIDOR>:8080` verás *"Dify has not been initialized..."*. **Es normal** → Completa el [Setup Wizard](guia_laboratorios_ubuntu24.md#06-dify-configuracion-inicial-obligatoria-setup-wizard) (crear admin, workspace, omitir el proveedor de modelo si no tienes una API key).
 
 > 🌐 **Comportamiento esperado**: sin sesión iniciada, Dify termina en `http://<IP_DE_TU_SERVIDOR>/signin?redirect_url=%2F`. Una página de login estable sin bucles de `redirect_url` indica que la ruta está correcta.
 
-> 🔧 **Fixes ya aplicados**: n8n secure cookie, PostgreSQL idempotente, Dify OOM, API URL via nginx, static assets, setup wizard, IP dinámica con LAB_HOST. Ver [Guía Laboratorios §0.7](guia_laboratorios_ubuntu24.md#07-fixes-aplicados-troubleshooting-común).
+> 🔧 **Correcciones ya aplicadas**: cookie segura de n8n, PostgreSQL idempotente, memoria de Dify, URL de API mediante nginx, recursos estáticos, setup wizard e IP dinámica con `LAB_HOST`. Ver [Guía Laboratorios §0.7](guia_laboratorios_ubuntu24.md#07-fixes-aplicados-troubleshooting-comun).
 
 ---
 
@@ -203,5 +203,5 @@ Al finalizar el curso, los participantes serán capaces de:
 ## 🏁 Próximos pasos
 
 1. **Entorno listo** → Verifica accesos en la tabla de arriba
-2. **Dify Setup Wizard** → Completa si es la primera vez ([Guía §0.6](guia_laboratorios_ubuntu24.md#06-dify-configuración-inicial-obligatoria-setup-wizard))
+2. **Dify Setup Wizard** → Completa si es la primera vez ([Guía §0.6](guia_laboratorios_ubuntu24.md#06-dify-configuracion-inicial-obligatoria-setup-wizard))
 3. **Empieza** → [Módulo 1: Fundamentos](modulos/modulo-01-fundamentos.md)
