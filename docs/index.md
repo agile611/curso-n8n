@@ -33,10 +33,10 @@ EOF
 
 # 3. Levantar stack completo (n8n + Dify + PostgreSQL + Redis + Docs)
 chmod +x init-multiple-dbs.sh envsubst.sh
-docker-compose -f docker-compose.lab.yml --env-file .env.lab up -d
+docker compose -f docker-compose.lab.yml --env-file .env.lab up -d
 
 # 4. Verificar que todo está "healthy" (2-3 min)
-docker-compose -f docker-compose.lab.yml ps
+docker compose -f docker-compose.lab.yml ps
 ```
 
 ### Verificar accesos (desde TU navegador local)

@@ -111,13 +111,36 @@ cd "$REMOTE_DIR"
 docker compose -f "$COMPOSE_FILE" pull
 log_success "Images pulled"
 
-# Step 6: Start services
-log_info "Step 6: Starting all services..."
+# Step 6: Start core services (postgres, redis) first and wait for health
+log_info "Step 6: Starting core services (postgres, redis)..."
 cd "$REMOTE_DIR"
-docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d
+docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d postgres redis
 
-# Step 7: Run Dify database migrations
-log_info "Step 7: Running Dify database migrations..."
+# Wait for postgres and redis to be healthy
+log_info "Waiting for postgres and redis to be healthy..."
+for i in {1..60}; do
+    if docker compose -f "$COMPOSE_FILE" ps postgres | grep -q "healthy" && \
+       docker compose -f "$COMPOSE_FILE" ps redis | grep -q "healthy"; then
+        log_success "Postgres and Redis are healthy"
+        break
+    fi
+    if [[ $i -eq 60 ]]; then
+        log_error "Postgres or Redis failed to become healthy within timeout"
+        exit 1
+    fi
+    sleep 2
+done
+
+# Step 7: Start remaining services individually to avoid postgres restart
+log_info "Step 7: Starting remaining services individually..."
+for service in n8n dify-api dify-web dify-worker docs nginx; do
+    log_info "Starting $service..."
+    docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d "$service"
+    sleep 3
+done
+
+# Step 8: Run Dify database migrations
+log_info "Step 8: Running Dify database migrations..."
 sleep 15  # Wait for PostgreSQL to be fully ready
 
 # Dify requires --entrypoint="" to override the default gunicorn entrypoint
@@ -125,8 +148,8 @@ log_info "Running: docker compose run --rm --entrypoint=\"\" dify-api python -m 
 docker compose -f "$COMPOSE_FILE" run --rm --entrypoint="" dify-api python -m flask db upgrade || \
 log_warn "Migration failed or already applied - continuing..."
 
-# Step 8: Wait for services to be healthy
-log_info "Step 8: Waiting for services to become healthy..."
+# Step 9: Wait for services to be healthy
+log_info "Step 9: Waiting for services to become healthy..."
 sleep 10
 
 # Check service health (services from docker-compose.lab.yml)
@@ -145,8 +168,8 @@ for service in "${SERVICES[@]}"; do
     done
 done
 
-# Step 9: Wait for Dify to be fully initialized (setup completion)
-log_info "Step 9: Waiting for Dify initialization..."
+# Step 10: Wait for Dify to be fully initialized (setup completion)
+log_info "Step 10: Waiting for Dify initialization..."
 log_info "Dify setup may take 60-120 seconds. Please be patient..."
 
 for i in {1..60}; do
@@ -167,8 +190,8 @@ for i in {1..60}; do
     sleep 3
 done
 
-# Step 10: Verify deployment
-log_info "Step 10: Verifying deployment..."
+# Step 12: Verify deployment
+log_info "Step 12: Verifying deployment..."
 cd "$REMOTE_DIR"
 
 echo ""
@@ -192,8 +215,8 @@ if [[ -z "$LOCAL_IP" ]]; then
     LOCAL_IP=$(ip route get 1.1.1.1 | awk '{print $7; exit}')
 fi
 
-# Step 11: Test endpoints
-log_info "Step 11: Testing endpoints..."
+# Step 13: Test endpoints
+log_info "Step 13: Testing endpoints..."
 sleep 10  # Give services more time to fully start
 
 # Use array of "url|name" to avoid colon parsing issues with http://

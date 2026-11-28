@@ -9,13 +9,13 @@ git clone https://github.com/agile611/curso-n8n.git
 cd curso-n8n
 
 # Levantar servicios
-docker-compose up -d
+docker compose up -d
 
 # Ver logs
-docker-compose logs -f
+docker compose logs -f
 
 # Detener
-docker-compose down
+docker compose down
 ```
 
 **Servicios incluidos:**
@@ -80,14 +80,14 @@ sudo apt-get install -y docker-compose-plugin
 # Cambiar server_name _; por server_name tudominio.com;
 
 # 2. Obtener certificado
-sudo docker-compose run --rm certbot certonly \
+sudo docker compose run --rm certbot certonly \
     --webroot -w /var/www/certbot \
     -d tudominio.com \
     --email admin@tudominio.com \
     --agree-tos --no-eff-email
 
 # 3. Descomentar bloque HTTPS en nginx.conf y recargar
-sudo docker-compose exec nginx nginx -s reload
+sudo docker compose exec nginx nginx -s reload
 ```
 
 ### Renovación automática
@@ -127,8 +127,8 @@ El servicio `certbot` en docker-compose.yml renueva automáticamente cada 12 hor
 ### Ver estado de servicios
 ```bash
 # Docker Compose
-docker-compose ps
-docker-compose logs -f curso-n8n
+docker compose ps
+docker compose logs -f curso-n8n
 
 # Systemd (despliegue nativo)
 sudo systemctl status curso-n8n
@@ -142,8 +142,8 @@ sudo nginx -t
 ### Reconstruir sitio
 ```bash
 # Docker
-docker-compose build --no-cache curso-n8n
-docker-compose up -d curso-n8n
+docker compose build --no-cache curso-n8n
+docker compose up -d curso-n8n
 
 # Nativo
 cd /opt/curso-n8n
@@ -174,7 +174,7 @@ sudo ufw allow 8000/tcp
 # Verificar servicio
 sudo systemctl status curso-n8n
 # o
-docker-compose logs curso-n8n
+docker compose logs curso-n8n
 ```
 
 ### Error 502 Bad Gateway
@@ -190,10 +190,10 @@ sudo systemctl reload nginx
 ### Certificados SSL no renuevan
 ```bash
 # Forzar renovación
-docker-compose run --rm certbot renew --force-renewal
+docker compose run --rm certbot renew --force-renewal
 
 # Verificar logs
-docker-compose logs certbot
+docker compose logs certbot
 ```
 
 ---
@@ -227,7 +227,7 @@ git pull origin main
 
 # 2. Reconstruir y reiniciar
 # Docker:
-docker-compose build --no-cache && docker-compose up -d
+docker compose build --no-cache && docker compose up -d
 
 # Nativo:
 cd /opt/curso-n8n
@@ -257,7 +257,7 @@ tail -f /var/log/nginx/access.log
 journalctl -u curso-n8n -f
 
 # Docker logs
-docker-compose logs -f --tail=100
+docker compose logs -f --tail=100
 ```
 
 ---

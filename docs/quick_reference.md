@@ -25,24 +25,24 @@
 ```bash
 # Levantar stack
 cd ~/curso-n8n
-docker-compose -f docker-compose.lab.yml --env-file .env.lab up -d
+docker compose -f docker-compose.lab.yml --env-file .env.lab up -d
 
 # Ver estado
-docker-compose -f docker-compose.lab.yml ps
+docker compose -f docker-compose.lab.yml ps
 
 # Logs tiempo real
-docker-compose -f docker-compose.lab.yml logs -f n8n
-docker-compose -f docker-compose.lab.yml logs -f dify-api
+docker compose -f docker-compose.lab.yml logs -f n8n
+docker compose -f docker-compose.lab.yml logs -f dify-api
 
 # Reiniciar servicio
-docker-compose -f docker-compose.lab.yml restart n8n
+docker compose -f docker-compose.lab.yml restart n8n
 
 # Backup workflows n8n
 curl -H "Authorization: Basic $(echo -n 'admin:n8n_lab_2026' | base64)" \
   http://<IP_DE_TU_SERVIDOR>:5678/api/v1/workflows > backup-$(date +%Y%m%d).json
 
 # Limpiar todo
-docker-compose -f docker-compose.lab.yml down -v
+docker compose -f docker-compose.lab.yml down -v
 ```
 
 ---
@@ -58,7 +58,7 @@ docker-compose -f docker-compose.lab.yml down -v
 | Static assets 404 (`/_next/...`) | Nginx `/_next/` y `/logo/` → `dify-web:3000` |
 | Setup wizard 404 | Nginx `/install` → `dify-web:3000/install` |
 | IP hardcodeada | Variable `LAB_HOST` en `.env.lab` + `envsubst` |
-| docker-compose version warning | Eliminado `version:` obsoleto |
+| docker compose version warning | Eliminado `version:` obsoleto |
 
 ---
 

@@ -44,7 +44,7 @@ ssh curso@<IP_DE_TU_SERVIDOR>
 
 # 2. Verificar requisitos
 docker --version           # Docker version 27.x+
-docker-compose version     # Docker Compose v2.x+
+docker compose version     # Docker Compose v2.x+
 free -h                    # RAM ≥ 8 GB recomendado
 df -h /                    # Disco ≥ 20 GB libre
 
@@ -65,10 +65,10 @@ EOF
 
 # 5. Levantar stack completo (n8n + Dify + Docs + PostgreSQL + Redis)
 chmod +x init-multiple-dbs.sh envsubst.sh
-docker-compose -f docker-compose.lab.yml --env-file .env.lab up -d
+docker compose -f docker-compose.lab.yml --env-file .env.lab up -d
 
 # 6. Verificar servicios
-docker-compose -f docker-compose.lab.yml ps
+docker compose -f docker-compose.lab.yml ps
 # Todos deben mostrar "Up" / "healthy"
 
 # 7. Acceder a interfaces (desde navegador LOCAL del alumno)
@@ -92,7 +92,7 @@ docker-compose -f docker-compose.lab.yml ps
 | Static assets 404 (`/_next/...`, `/logo/...`) | Nginx locations `/_next/` y `/logo/` proxy a `dify-web:3000` |
 | Dify setup wizard 404 | Nginx location `/install` proxy a `dify-web:3000/install` |
 | IP hardcodeada | Variable `LAB_HOST` en `.env.lab` + `envsubst` en nginx template |
-| docker-compose version warning | Eliminado atributo `version:` obsoleto |
+| docker compose version warning | Eliminado atributo `version:` obsoleto |
 
 ### docker-compose.lab.yml (Crear en raíz del repo)
 
@@ -569,8 +569,8 @@ http {
 - [ ] Docker + Docker Compose instalados y funcionando
 - [ ] Puertos 5678, 8080, 8001 abiertos en firewall
 - [ ] `docker-compose.lab.yml` + `init-multiple-dbs.sh` + `nginx.lab.conf` en repo
-- [ ] Stack levantado: `docker-compose -f docker-compose.lab.yml up -d`
-- [ ] Todos los contenedores "healthy" (`docker-compose ps`)
+- [ ] Stack levantado: `docker compose -f docker-compose.lab.yml up -d`
+- [ ] Todos los contenedores "healthy" (`docker compose ps`)
 
 ### n8n
 - [ ] Acceso UI: `http://192.168.1.100:5678` (admin / n8n_lab_2026)
@@ -608,13 +608,13 @@ http {
 
 ```bash
 # Ver logs en tiempo real
-docker-compose -f docker-compose.lab.yml logs -f n8n
-docker-compose -f docker-compose.lab.yml logs -f dify-api
-docker-compose -f docker-compose.lab.yml logs -f dify-worker
+docker compose -f docker-compose.lab.yml logs -f n8n
+docker compose -f docker-compose.lab.yml logs -f dify-api
+docker compose -f docker-compose.lab.yml logs -f dify-worker
 
 # Reiniciar servicio específico
-docker-compose -f docker-compose.lab.yml restart n8n
-docker-compose -f docker-compose.lab.yml restart dify-api dify-worker
+docker compose -f docker-compose.lab.yml restart n8n
+docker compose -f docker-compose.lab.yml restart dify-api dify-worker
 
 # Backup n8n workflows (export manual via UI o API)
 curl -X GET http://192.168.1.100:5678/api/v1/workflows \
@@ -624,7 +624,7 @@ curl -X GET http://192.168.1.100:5678/api/v1/workflows \
 # Backup Dify (via UI: Settings → Backup & Restore)
 
 # Limpiar todo al final
-docker-compose -f docker-compose.lab.yml down -v
+docker compose -f docker-compose.lab.yml down -v
 # -v elimina volúmenes (datos persistentes)
 ```
 
@@ -634,8 +634,8 @@ docker-compose -f docker-compose.lab.yml down -v
 
 | Problema | Causa Probable | Solución |
 |----------|----------------|----------|
-| n8n "Database connection failed" | Postgres no ready | `docker-compose logs postgres` → esperar healthy |
-| Dify "Redis connection refused" | Redis password mismatch | Verificar `REDIS_PASSWORD` en .env y docker-compose |
+| n8n "Database connection failed" | Postgres no ready | `docker compose logs postgres` → esperar healthy |
+| Dify "Redis connection refused" | Redis password mismatch | Verificar `REDIS_PASSWORD` en .env y docker compose |
 | Webhook n8n 404 | Workflow no activo | Activar workflow (toggle "Active") + Save |
 | Dify "Model provider error" | API Key inválida / quota | Verificar key / usar Ollama local |
 | Out of memory (OOM) | RAM insuficiente | Aumentar swap: `sudo fallocate -l 4G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile` |

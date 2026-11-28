@@ -52,7 +52,7 @@ curso-n8n/
 ├── mkdocs.yml                 # Configuración y navegación
 ├── requirements.txt           # Dependencias Python pinneadas
 ├── Dockerfile                 # Imagen Docker para Ubuntu 24.04
-├── docker-compose.yml         # MkDocs + Nginx + Certbot
+├── docker-compose.yml         # MkDocs + Nginx + Certbot (usando docker compose v2)
 ├── nginx.conf                 # Reverse proxy con cache/SSL
 ├── deploy-ubuntu.sh           # Script despliegue nativo/Docker
 ├── DEPLOY.md                  # Guía completa de despliegue
@@ -96,7 +96,7 @@ curso-n8n/
 
 ### Opción A: Docker Compose (recomendado)
 ```bash
-docker-compose up -d
+docker compose up -d
 # Incluye: MkDocs (8000) + Nginx (80/443) + Certbot (SSL auto)
 ```
 
