@@ -4,14 +4,14 @@
 
 ---
 
-## Objetivos del módulo
+## 🎯 Objetivos del módulo
 
 Al finalizar, los participantes podrán:
 
-- Diferenciar **automatización determinista** vs **agente con IA** y elegir según el caso
-- Identificar **procesos técnicos candidatos** a automatización en su entorno
-- Entender el **ecosistema de herramientas** (n8n, Dify, Make) y criterios de selección
-- Aplicar **clasificación de riesgo/impacto** para priorizar automatizaciones
+- ✅ Diferenciar **automatización determinista** vs **agente con IA** y elegir según el caso
+- ✅ Identificar **procesos técnicos candidatos** a automatización en su entorno
+- ✅ Entender el **ecosistema de herramientas** (n8n, Dify, Make) y criterios de selección
+- ✅ Aplicar **clasificación de riesgo/impacto** para priorizar automatizaciones
 
 ---
 
@@ -21,43 +21,43 @@ Al finalizar, los participantes podrán:
 
 > **Definición:** Una **automatización no-code/low-code** es una secuencia de pasos lógicos configurada visualmente (sin escribir código tradicional) que ejecuta tareas repetitivas, integra sistemas o procesa datos entre aplicaciones.
 
-| Problema que resuelve | Ejemplo técnico |
-|----------------------|-----------------|
-| **Tareas repetitivas manuales** | Crear tickets en Jira desde alertas de monitoring |
-| **Integración entre sistemas sin API nativa** | Sincronizar CMDB ↔ Active Directory |
-| **Procesos multi-paso propensos a error humano** | Onboarding de servidor: DNS + monitoring + backup + CMDB |
-| **Cuellos de botella en equipos especializados** | Auto-clasificación de alertas de seguridad Nivel 1 |
-| **Falta de trazabilidad en operaciones ad-hoc** | Registro automático de cambios en Confluence |
+| Problema que resuelve | Ejemplo técnico | Impacto estimado |
+|----------------------|-----------------|------------------|
+| **Tareas repetitivas manuales** | Crear tickets en Jira desde alertas de monitoring | 5h/semana ahorradas |
+| **Integración entre sistemas sin API nativa** | Sincronizar CMDB ↔ Active Directory | Elimina trabajo manual |
+| **Procesos multi-paso propensos a error humano** | Onboarding de servidor: DNS + monitoring + backup + CMDB | Reduce errores 90% |
+| **Cuellos de botella en equipos especializados** | Auto-clasificación de alertas de seguridad Nivel 1 | Libera senior para tareas complejas |
+| **Falta de trazabilidad en operaciones ad-hoc** | Registro automático de cambios en Confluence | Auditoría completa |
 
-> 💡 **Ejemplo para clase:** "Imaginad que cada vez que salta una alerta de disco lleno en vuestro monitoring, alguien tiene que: 1) leer el mail, 2) entrar al servidor, 3) limpiar logs, 4) cerrar la alerta, 5) documentar en Confluence. Eso son 15 min × 20 alertas/semana = 5h/semana automatizables."
+> 💡 **Ejemplo para clase:** "Imaginad que cada vez que salta una alerta de disco lleno en vuestro monitoring, alguien tiene que: 1) leer el mail, 2) entrar al servidor, 3) limpiar logs, 4) cerrar la alerta, 5) documentar en Confluence. Eso son 15 min × 20 alertas/semana = **5h/semana automatizables**."
 
 ### Diferencias entre workflow, integración, bot, asistente y agente
 
-| Concepto | Definición | Ejemplo n8n/Dify | Nivel de autonomía |
-|----------|------------|------------------|-------------------|
-| **Workflow** | Secuencia determinista de pasos predefinidos | n8n: Webhook → HTTP Request → IF → Slack | Bajo (sigue reglas fijas) |
-| **Integración** | Conexión punto-a-punto entre 2 sistemas | n8n: GitLab webhook → Jira create issue | Bajo |
-| **Bot** | Script automatizado que simula acciones de usuario | n8n: Scraper web + API legacy | Bajo-Medio |
-| **Asistente** | IA conversacional especializada en un dominio | Dify: Chat con prompt de sistema + contexto | Medio (responde, no ejecuta) |
-| **Agente** | IA que **planifica, usa herramientas y decide** | Dify Agent: recibe meta → elige tools → ejecuta → valida | Alto (toma decisiones) |
+| Concepto | Definición | Ejemplo n8n/Dify | Nivel de autonomía | Cuándo usar |
+|----------|------------|------------------|-------------------|-------------|
+| **Workflow** | Secuencia determinista de pasos predefinidos | n8n: Webhook → HTTP Request → IF → Slack | Bajo (sigue reglas fijas) | Procesos predecibles, repetibles |
+| **Integración** | Conexión punto-a-punto entre 2 sistemas | n8n: GitLab webhook → Jira create issue | Bajo | Conectar 2 sistemas |
+| **Bot** | Script automatizado que simula acciones de usuario | n8n: Scraper web + API legacy | Bajo-Medio | Automatizar UI sin API |
+| **Asistente** | IA conversacional especializada en un dominio | Dify: Chat con prompt de sistema + contexto | Medio (responde, no ejecuta) | Soporte, clasificación, generación |
+| **Agente** | IA que **planifica, usa herramientas y decide** | Dify Agent: recibe meta → elige tools → ejecuta → valida | Alto (toma decisiones) | Tareas abiertas, ambiguas |
 
 > 💬 **Pregunta de discusión:** "¿Dónde ponéis el límite entre un workflow complejo con muchos IFs y un agente? ¿Es el número de ramas o la capacidad de *elegir* la herramienta?"
 
 ### Casos de uso técnicos: ITSM, operaciones cloud, soporte, reporting y ciberseguridad
 
-| Dominio | Caso de uso | Herramienta sugerida | Complejidad |
-|---------|-------------|---------------------|-------------|
-| **ITSM** | Auto-clasificación y enrutamiento de tickets | n8n + Dify (clasificador) | Media |
-| **ITSM** | Creación automática de cambios estandarizados | n8n | Baja |
-| **Cloud Ops** | Auto-remediation: reiniciar servicio, escalar ASG | n8n + AWS CLI / SDK | Media |
-| **Cloud Ops** | Inventario de recursos sin etiquetas (tagging) | n8n (scheduled) | Baja |
-| **Soporte** | Respuesta automática a FAQs con RAG | Dify (RAG) | Media |
-| **Soporte** | Resumen de hilos largos de tickets para escalado | Dify (workflow IA) | Media |
-| **Reporting** | Consolidación diaria de métricas multi-cloud | n8n (scheduled + HTTP) | Media |
-| **Ciberseguridad** | Enriquecimiento de IOCs (VirusTotal, AbuseIPDB) | n8n + APIs externas | Media |
-| **Ciberseguridad** | Análisis de logs sospechosos con IA | Dify Agent (tools: SIEM query) | Alta |
+| Dominio | Caso de uso | Herramienta sugerida | Complejidad | ROI estimado |
+|---------|-------------|---------------------|-------------|--------------|
+| **ITSM** | Auto-clasificación y enrutamiento de tickets | n8n + Dify (clasificador) | Media | Alto |
+| **ITSM** | Creación automática de cambios estandarizados | n8n | Baja | Alto |
+| **Cloud Ops** | Auto-remediation: reiniciar servicio, escalar ASG | n8n + AWS CLI / SDK | Media | Muy alto |
+| **Cloud Ops** | Inventario de recursos sin etiquetas (tagging) | n8n (scheduled) | Baja | Medio |
+| **Soporte** | Respuesta automática a FAQs con RAG | Dify (RAG) | Media | Alto |
+| **Soporte** | Resumen de hilos largos de tickets para escalado | Dify (workflow IA) | Media | Medio |
+| **Reporting** | Consolidación diaria de métricas multi-cloud | n8n (scheduled + HTTP) | Media | Medio |
+| **Ciberseguridad** | Enriquecimiento de IOCs (VirusTotal, AbuseIPDB) | n8n + APIs externas | Media | Alto |
+| **Ciberseguridad** | Análisis de logs sospechosos con IA | Dify Agent (tools: SIEM query) | Alta | Alto |
 
-> 🧪 **Ejemplo Lab 1.1:** Cada participante trae **3 procesos reales** de su entorno y los clasifica en la tabla anterior.
+> 🧪 **🧪 Lab 1.1 - Identifica tus procesos:** Cada participante trae **3 procesos reales** de su entorno y los clasifica usando la tabla anterior. Compartid en grupo: ¿cuál automatizaríais primero y por qué?
 
 ### Criterios para elegir entre automatización determinista y agente con IA
 
@@ -75,9 +75,89 @@ Al finalizar, los participantes podrán:
 
 > ⚠️ **Punto crítico:** "Nunca uséis un agente para algo que un `IF` resuelve. El coste (tokens, latencia, riesgo) no compensa."
 
-### Riesgos de automatizar procesos mal definidos o sin supervisión
+### 🧪 Lab 1.2 - Matriz de decisión: ¿n8n o Dify?
 
-> 📝 **Anti-patrones clásicos para mostrar en clase:**
+Para cada escenario, decidid qué herramienta usar y justificad:
+
+| Escenario | ¿n8n o Dify? | Justificación |
+|-----------|--------------|---------------|
+| "Cada día a las 6am, consulta API de AWS y genera reporte de costes en Slack" | | |
+| "Usuario pregunta en Slack: '¿Cómo configuro webhook en n8n?' y bot responde" | | |
+| "Alerta de disco lleno → enriquece con CMDB → clasifica P1/P2 → crea ticket Jira → notifica on-call" | | |
+| "Usuario sube PDF de 50 páginas → extrae requisitos → genera user stories en Jira" | | |
+| "Cada hora, consulta API de GitHub y sincroniza issues con Jira" | | |
+| "Usuario pregunta: '¿Por qué falló el deploy?' → analiza logs → propone causa raíz" | | |
+
+> 💡 **Solución al final del módulo** (no miréis antes de decidir)
+
+---
+
+## 1.2 Ecosistema de herramientas: n8n, Dify, Make
+
+### Comparativa rápida
+
+| Característica | **n8n** | **Dify** | **Make** |
+|----------------|---------|----------|----------|
+| **Foco principal** | Orquestación workflows | IA, RAG, Agentes | Integraciones SaaS |
+| **Self-hosted** | ✅ Docker, npm, K8s | ✅ Docker Compose | ❌ Solo cloud |
+| **Nodos/Integrations** | 400+ built-in | Plugins + Tools | 1500+ apps |
+| **IA nativa** | Básica (Function node) | Nativa (RAG, Agent, Workflow) | Básica |
+| **Precio self-hosted** | Gratis (open source) | Gratis (open source) | Solo cloud |
+| **Curva aprendizaje** | Media | Media-Alta | Baja |
+| **Comunidad** | Muy activa | Creciente | Muy activa |
+
+> 💡 **Recomendación:** Usad **n8n** para orquestación, integraciones, webhooks, lógica de control. Usad **Dify** para todo lo que requiera IA: clasificación, extracción, RAG, agentes. Conectadlos vía HTTP/API.
+
+---
+
+## 1.3 Clasificación de riesgo/impacto para priorizar
+
+### Matriz Riesgo vs Impacto
+
+| | **Impacto BAJO** | **Impacto MEDIO** | **Impacto ALTO** |
+|---|------------------|-------------------|------------------|
+| **Riesgo ALTO** | 🟡 Piloto controlado | 🟠 Requiere aprobación + testing | 🔴 **NO automatizar** sin revisión arquitectura |
+| **Riesgo MEDIO** | 🟢 Automatizar con tests | 🟡 Piloto + monitoreo | 🟠 Requiere approval gate |
+| **Riesgo BAJO** | 🟢 Automatizar directo | 🟢 Automatizar + monitoring | 🟡 Piloto + approval gate |
+
+### Cálculo de riesgo (ejemplo práctico)
+
+| Factor | Pregunta | Peso |
+|--------|----------|------|
+| **Reversibilidad** | ¿Se puede deshacer fácilmente? | 30% |
+| **Impacto negocio** | ¿Qué pasa si falla? (caída servicio, pérdida datos, multa) | 30% |
+| **Complejidad** | ¿Cuántos sistemas/decisiones involucra? | 20% |
+| **Frecuencia** | ¿Cuántas veces se ejecuta? | 10% |
+| **Madurez proceso** | ¿Está documentado y estandarizado? | 10% |
+
+> 🧪 **Lab 1.3 - Calcula el riesgo:** Cada grupo evalúa 3 procesos reales usando la matriz. Presentad: ¿cuál automatizáis primero?
+
+---
+
+## 📝 Soluciones Lab 1.2
+
+| Escenario | ¿n8n o Dify? | Justificación |
+|-----------|--------------|---------------|
+| "Cada día a las 6am, consulta API de AWS y genera reporte de costes en Slack" | **n8n** | Schedule + HTTP Request + Slack = determinista |
+| "Usuario pregunta en Slack: '¿Cómo configuro webhook en n8n?' y bot responde" | **Dify** | Chat Assistant con KB de docs n8n |
+| "Alerta de disco lleno → enriquece con CMDB → clasifica P1/P2 → crea ticket Jira → notifica on-call" | **n8n + Dify** | n8n orquesta, Dify clasifica/enriquece |
+| "Usuario sube PDF de 50 páginas → extrae requisitos → genera user stories en Jira" | **Dify** | Workflow IA: extracción → transformación → API Jira |
+| "Cada hora, consulta API de GitHub y sincroniza issues con Jira" | **n8n** | Schedule + HTTP Request + Jira = determinista |
+| "Usuario pregunta: '¿Por qué falló el deploy?' → analiza logs → propone causa raíz" | **Dify Agent** | Agent con tools: logs, git, k8s |
+
+---
+
+## ✅ Checklist de fin de módulo
+
+- [ ] Puedo explicar la diferencia entre workflow determinista y agente IA
+- [ ] Sé identificar 3 procesos de mi entorno automatizables
+- [ ] Puedo clasificar riesgo/impacto de un proceso
+- [ ] Sé cuándo usar n8n vs Dify vs Make
+- [ ] Entiendo los anti-patrones de automatización
+
+---
+
+> **Siguiente:** [Módulo 2: Primer workflow práctico con n8n](modulo-02-primer-workflow.md)
 
 | Anti-patrón | Síntoma | Consecuencia | Solución |
 |-------------|---------|--------------|----------|

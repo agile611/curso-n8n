@@ -951,3 +951,33 @@ slos:
 ## 🔗 Siguiente: [Módulo 9: Caso práctico final integrado](modulo-09-caso-final.md)
 
 > **Preparad:** Todos los workflows/apps de labs previos, entorno de integración completo, datos de prueba end-to-end, stakeholders para revisión final.
+### Gate 3: Piloto → Productivo
+
+> **Plantilla Go/No-Go**
+
+```markdown
+# Go/No-Go Decision: [Proyecto] - [Gate X]
+
+## Criterios
+| Criterio | Target | Actual | Pass/Fail | Evidencia |
+|----------|--------|--------|-----------|-----------|
+| Checklist seguridad firmado | 100% | 100% | ✅ | Link doc |
+| Test coverage | >80% | 85% | ✅ | CI report |
+| Latencia P95 | <5s | 3.2s | ✅ | Grafana |
+| Error rate | <1% | 0.3% | ✅ | Grafana |
+| User satisfaction | >4/5 | 4.2/5 | ✅ | Survey |
+| | | | | |
+
+> **Decisión**
+> - [ ] **GO** - Proceder a siguiente etapa
+> - [ ] **CONDITIONAL GO** - Con acciones correctivas (listar)
+> - [ ] **NO-GO** - Retroceder / Cancelar (justificar)
+> 
+> ## Firmas
+> | Rol | Nombre | Decisión | Fecha |
+> |-----|--------|----------|-------|
+> | Technical Lead | | | |
+> | Platform Lead | | | |
+> | Security | | | |
+> | Product Owner | | | |
+> 

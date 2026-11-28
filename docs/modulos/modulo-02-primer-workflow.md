@@ -4,15 +4,15 @@
 
 ---
 
-## Objetivos del módulo
+## 🎯 Objetivos del módulo
 
 Al finalizar, los participantes podrán:
 
-- Crear y ejecutar un **workflow completo** en n8n desde cero
-- Usar **nodos esenciales**: Trigger, Set, IF, HTTP Request, Slack/Email
-- **Transformar datos** entre pasos con expresiones n8n (`{{ $json... }}`)
-- **Depurar ejecuciones** leyendo inputs/outputs de cada nodo
-- Aplicar **buenas prácticas**: nombres, comentarios, organización
+- ✅ Crear y ejecutar un **workflow completo** en n8n desde cero
+- ✅ Usar **nodos esenciales**: Trigger, Set, IF, HTTP Request, Slack/Email
+- ✅ **Transformar datos** entre pasos con expresiones n8n (`{{ $json... }}`)
+- ✅ **Depurar ejecuciones** leyendo inputs/outputs de cada nodo
+- ✅ Aplicar **buenas prácticas**: nombres, comentarios, organización
 
 ---
 
@@ -77,6 +77,310 @@ Al finalizar, los participantes podrán:
 | `is_critical` | `{{ $json.severity === 'critical' }}` | Boolean para IF |
 | `env` | `{{ $json.instance.startsWith('prod') ? 'production' : 'non-prod' }}` | Lógica condicional |
 | `timestamp_iso` | `{{ $now.toISOString() }}` | Timestamp ejecución |
+
+---
+
+## 2.2 Expresiones n8n: La clave para transformar datos
+
+### Sintaxis básica
+
+| Qué | Sintaxis | Ejemplo |
+|-----|----------|---------|
+| Campo input actual | `{{ $json.campo }}` | `{{ $json.alertname }}` |
+| Campo nodo anterior | `{{ $('Nombre Nodo').item.json.campo }}` | `{{ $('Set').item.json.host }}` |
+| Condicional inline | `{{ cond ? 'a' : 'b' }}` | `{{ $json.severity === 'critical' ? 'P1' : 'P2' }}` |
+| Default/fallback | `{{ $json.campo ?? 'default' }}` | `{{ $json.owner ?? 'unknown' }}` |
+| Fecha actual ISO | `{{ $now.toISOString() }}` | `2026-01-15T10:30:00.000Z` |
+| Random string | `{{ $randomString(12) }}` | `aB3x9K2mP7qR` |
+| JSON stringify | `{{ JSON.stringify($json) }}` | `{"alertname":"DiskSpaceCritical",...}` |
+
+### Funciones útiles de n8n
+
+| Función | Qué hace | Ejemplo |
+|---------|----------|---------|
+| `$json.field` | Accede a campo del JSON actual | `{{ $json.severity }}` |
+| `$json.field ?? 'default'` | Default si null/undefined | `{{ $json.owner ?? 'unassigned' }}` |
+| `$now.toISOString()` | Timestamp actual ISO 8601 | `2026-01-15T10:30:00.000Z` |
+| `$now.minus(1, 'hour')` | Hace 1 hora | `{{ $now.minus(1, 'hour').toISOString() }}` |
+| `$randomString(16)` | String aleatorio | `{{ $randomString(16) }}` |
+| `JSON.stringify(obj)` | Objeto → String JSON | `{{ JSON.stringify($json) }}` |
+| `JSON.parse(str)` | String JSON → Objeto | `{{ JSON.parse($json.payload) }}` |
+
+---
+
+## 2.3 Nodos de lógica: IF, Switch, Merge
+
+### IF Node - Decisiones binarias
+
+```javascript
+// Condición: severity es critical
+{{ $json.severity === 'critical' }}
+
+// Con múltiples condiciones
+{{ $json.severity === 'critical' && $json.env === 'production' }}
+
+// Usando funciones
+{{ $json.value.includes('error') }}
+```
+
+### Switch Node - Múltiples ramas
+
+| Campo | Valor | Rama |
+|-------|-------|------|
+| `system` | `github` | Rama 1 |
+| `system` | `jira` | Rama 2 |
+| `system` | `aws` | Rama 3 |
+| *default* | - | Rama Default |
+
+### Merge Node - Unificar ramas
+
+| Modo | Cuándo usar |
+|------|-------------|
+| **Wait** | Ambas ramas deben llegar (sincronización) |
+| **Pass Through** | Primera que llega continúa (race condition) |
+| **Append** | Concatenar arrays de ambas ramas |
+
+---
+
+## 2.4 HTTP Request Node - Llamar APIs externas
+
+### Configuración básica
+
+| Campo | Valor | Notas |
+|-------|-------|-------|
+| **Method** | `GET` / `POST` / `PUT` / `DELETE` / `PATCH` | Según API |
+| **URL** | `https://api.example.com/v1/resource` | Usar variables: `{{ $json.base_url }}/api/v1/{{ $json.endpoint }}` |
+| **Authentication** | Header Auth / OAuth2 / Basic Auth | Credenciales n8n |
+| **Headers** | `Content-Type: application/json` | + custom headers |
+| **Body** | JSON / Form / Raw | `{{ JSON.stringify($json) }}` |
+| **Options** | Timeout: 30000ms, Retry: 3 | Importante para resiliencia |
+
+### Manejo de errores en HTTP Request
+
+```javascript
+// En nodo Function después de HTTP Request (para capturar errores)
+try {
+  return items[0].json;
+} catch (error) {
+  return [{
+    json: {
+      error: true,
+      message: error.message,
+      status_code: error.status_code,
+      url: $json.url
+    }
+  }];
+}
+```
+
+---
+
+## 2.3 🧪 Lab 2.1 - Crea tu primer workflow completo
+
+### Objetivo: Workflow "Process Tech Request"
+
+**Flujo:** Webhook → Validar → Enriquecer → Decidir → Ejecutar → Auditar → Notificar
+
+### Paso a paso
+
+#### 1. Crear workflow
+1. n8n UI → **Workflows** → **New**
+2. Nombre: `Lab 2.1 - Process Tech Request`
+3. Descripción: `Procesa solicitudes técnicas: valida, enriquece, decide, ejecuta, audita`
+
+#### 2. Nodo 1: Manual Trigger (para testing)
+- Añadir **Manual Trigger**
+- En **Test Data** pegar:
+```json
+{
+  "ticket_id": "INC-2026-00042",
+  "type": "access_request",
+  "system": "github",
+  "requester": "dev-team-lead",
+  "details": {
+    "username": "newdev01",
+    "repositories": ["frontend-app", "backend-api"],
+    "permission": "write",
+    "justification": "Nuevo desarrollador sprint 12"
+  },
+  "priority": "high"
+}
+```
+
+#### 3. Nodo 2: Set - Validar y normalizar
+- Añadir **Set** → Nombre: `Validate & Normalize`
+- Campos:
+```javascript
+// valid: true si todos los campos obligatorios existen
+valid: {{ !!$json.ticket_id && !!$json.type && !!$json.system && !!$json.requester }}
+
+// type_norm: normaliza tipo
+type_norm: {{ $json.type.toLowerCase().trim() }}
+
+// system_norm: normaliza sistema
+system_norm: {{ $json.system.toLowerCase().trim() }}
+
+// priority_norm: default 'medium' si no viene
+priority_norm: {{ $json.priority?.toLowerCase() ?? 'medium' }}
+
+// timestamp: ahora
+received_at: {{ $now.toISOString() }}
+
+// request_id: único
+request_id: {{ $randomString(12) }}
+```
+
+#### 4. Nodo 3: IF - Validar
+- Añadir **IF** → Nombre: `Valid Request?`
+- Condición: `{{ $json.valid === true }}`
+- **True** → continúa flujo
+- **False** → Set `Error Response` → Respond to Webhook (400)
+
+#### 5. Nodo 5: Switch - Enrutar por sistema
+- Añadir **Switch** → Nombre: `Route by System`
+- Campo: `{{ $json.system_norm }}`
+- Ramas: `github`, `jira`, `aws`, `default`
+
+#### 6. Nodos 6-8: HTTP Request por sistema (Mock con httpbin.org)
+- Para cada rama: **HTTP Request**
+- URL: `https://httpbin.org/post`
+- Method: `POST`
+- Headers: `Content-Type: application/json`
+- Body (JSON):
+```json
+{
+  "ticket_id": "{{ $json.ticket_id }}",
+  "action": "create_access",
+  "system": "{{ $json.system_norm }}",
+  "details": {{ JSON.stringify($json.details) }},
+  "requested_by": "{{ $json.requester }}",
+  "priority": "{{ $json.priority_norm }}"
+}
+```
+- Authentication: **Lab HTTP Auth** (Header: `Authorization: Bearer lab-token-2026`)
+
+#### 7. Nodo 9: Merge (Wait mode)
+- Añadir **Merge** → Mode: `Wait`
+- Conectar todas las ramas del Switch
+
+#### 8. Nodo 10: Set - Construir registro auditoría
+- Añadir **Set** → Nombre: `Build Audit Log`
+- Campos:
+```javascript
+audit_id: {{ $randomString(16) }}
+ticket_id: {{ $json.ticket_id }}
+action: "create_access"
+system: {{ $json.system_norm }}
+status: "completed"
+executed_at: {{ $now.toISOString() }}
+executed_by: "n8n-automation"
+requester: {{ $json.requester }}
+details: {{ JSON.stringify($json.details) }}
+```
+
+#### 9. Nodo 11: HTTP Request - Enviar a Audit Log
+- **HTTP Request** → URL: `https://webhook.site/#!/view/<TU_UUID>`
+- Method: `POST`
+- Body: `{{ JSON.stringify($json) }}`
+
+#### 10. Nodo 12: Slack / Email - Notificar
+- **Slack** o **Email** node
+- Message: `✅ Ticket {{ $json.ticket_id }} procesado: {{ $json.system }} access granted to {{ $json.details.username }}`
+
+#### 11. Guardar y Ejecutar
+1. **Save** → **Execute Workflow**
+2. Ver **Execution Log** → verde = éxito
+3. Revisar cada nodo: Input/Output
+
+---
+
+## 2.4 🧪 Lab 2.2 - Depuración y troubleshooting
+
+### Leer Execution Log
+
+| Columna | Qué muestra |
+|---------|-------------|
+| **Status** | Success (verde) / Error (rojo) / Running (azul) |
+| **Started** | Timestamp inicio |
+| **Duration** | Tiempo total |
+| **Nodes** | Nodos ejecutados (click para ver I/O) |
+
+### Debug paso a paso
+
+1. Click en nodo en Execution Log
+2. Ver **Input** (qué recibió) y **Output** (qué devolvió)
+3. Si error: click nodo rojo → ver **Error Message**
+
+### Errores comunes y soluciones
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| `Cannot read property 'x' of undefined` | Campo no existe en JSON | Usar `?? 'default'` o validar antes |
+| `401 Unauthorized` | Credenciales incorrectas | Verificar Credentials en n8n |
+| `404 Not Found` | URL incorrecta | Verificar URL y path |
+| `500 Internal Server Error` | Error en API destino | Ver logs API destino |
+| `Timeout` | API tarda > 30s | Aumentar timeout en HTTP Request |
+
+---
+
+## 2.5 Buenas prácticas de workflows
+
+| Práctica | Por qué | Ejemplo |
+|----------|---------|---------|
+| **Nombres descriptivos** | Legibilidad, mantenimiento | `Validate Request` no `Set1` |
+| **Comentarios en nodos** | Documentación viva | Click derecho → Add Comment |
+| **Validar al inicio** | Fail fast | Set `valid` boolean al inicio |
+| **Try/Catch en Function** | Capturar errores | Try/catch + return error object |
+| **Merge Wait** | Sincronizar ramas | Evita race conditions |
+| **Versionar workflows** | Rollback fácil | Export JSON + Git |
+| **Credenciales separadas** | Seguridad, rotación | n8n Credentials, no hardcoded |
+
+---
+
+## 🧪 Lab 2.3 - Webhook Trigger (para Módulo 3)
+
+### Convertir a Webhook
+
+1. Borrar **Manual Trigger**
+2. Añadir **Webhook** → Path: `/lab21/request` → Method: `POST` → Response Mode: `On Received`
+3. **Save** → **Activate** (toggle Active ON)
+4. Test:
+```bash
+curl -X POST http://192.168.1.100:5678/webhook/lab21/request \
+  -H "Content-Type: application/json" \
+  -d @~/curso-n8n/request-sample.json
+```
+
+---
+
+## ✅ Checklist de fin de módulo
+
+- [ ] Puedo crear un workflow desde cero
+- [ ] Uso Manual Trigger y Webhook Trigger
+- [ ] Transformo datos con Set y expresiones n8n
+- [ ] Uso IF, Switch, Merge correctamente
+- [ ] Llamo APIs externas con HTTP Request
+- [ ] Depuro ejecuciones leyendo I/O de nodos
+- [ ] Aplico buenas prácticas: nombres, comentarios, validación
+
+---
+
+## 📝 Solución Lab 2.1 (resumen)
+
+El workflow final tiene 12 nodos:
+1. Manual Trigger (test data)
+2. Set: Validate & Normalize
+3. IF: Valid Request?
+4. Switch: Route by System
+5-8. HTTP Request (GitHub/Jira/AWS/Default) → httpbin.org
+9. Merge (Wait)
+10. Set: Build Audit Log
+11. HTTP Request: Audit Log → webhook.site
+12. Slack: Notify
+
+---
+
+> **Siguiente:** [Módulo 3: Eventos, webhooks e integración con sistemas](modulo-03-eventos-webhooks.md)
 
 > 💡 **Expresiones útiles:**
 > - `{{ $json.field }}` — Acceso a campo del input

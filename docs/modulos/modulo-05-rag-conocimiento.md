@@ -4,15 +4,15 @@
 
 ---
 
-## Objetivos del módulo
+## 🎯 Objetivos del módulo
 
 Al finalizar, los participantes podrán:
 
-- Entender **RAG (Retrieval-Augmented Generation)** y por qué es crítico para documentación técnica
-- Preparar, fragmentar e indexar documentos en **Dify Knowledge Base**
-- Configurar **retrieval** (hybrid search, reranking) y **generation** (citations, guardrails)
-- Detectar y mitigar **problemas habituales**: docs contradictorios, obsoletos, chunking inadecuado
-- Evaluar si una respuesta está **suficientemente soportada** por fuentes
+- ✅ Entender **RAG (Retrieval-Augmented Generation)** y por qué es crítico para documentación técnica
+- ✅ Preparar, fragmentar e indexar documentos en **Dify Knowledge Base**
+- ✅ Configurar **retrieval** (hybrid search, reranking) y **generation** (citations, guardrails)
+- ✅ Detectar y mitigar **problemas habituales**: docs contradictorios, obsoletos, chunking inadecuado
+- ✅ Evaluar si una respuesta está **suficientemente soportada** por fuentes
 
 ---
 

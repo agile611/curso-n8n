@@ -4,15 +4,15 @@
 
 ---
 
-## Objetivos del módulo
+## 🎯 Objetivos del módulo
 
 Al finalizar, los participantes podrán:
 
-- Diferenciar **tipos de triggers** y elegir según el patrón de integración
-- Configurar **webhooks seguros** como punto de entrada de automatizaciones
-- Consumir **APIs REST** desde n8n con autenticación, paginación y manejo de errores
-- Diseñar **patrones de reintento, fallback y circuit breaker** para resiliencia
-- Implementar **validación de entradas** antes de llamar a sistemas externos
+- ✅ Diferenciar **tipos de triggers** y elegir según el patrón de integración
+- ✅ Configurar **webhooks seguros** como punto de entrada de automatizaciones
+- ✅ Consumir **APIs REST** desde n8n con autenticación, paginación y manejo de errores
+- ✅ Diseñar **patrones de reintento, fallback y circuit breaker** para resiliencia
+- ✅ Implementar **validación de entradas** antes de llamar a sistemas externos
 
 ---
 
@@ -47,6 +47,343 @@ Al finalizar, los participantes podrán:
 | **Raw Body** | `true` | Para recibir JSON sin parsear n8n |
 
 #### Modos de respuesta: Síncrono vs Asíncrono
+
+> **Crítico para diseño de integraciones:**
+
+| Modo | Comportamiento | Cuándo usar | Timeout |
+|------|----------------|-------------|---------|
+| **On Received** (async) | Responde `200 OK` **inmediatamente**, workflow continúa en background | Webhooks de alertas, eventos fire-and-forget, alta latencia esperada | N/A (inmediato) |
+| **Response Node** (sync) | Espera a nodo `Respond to Webhook` → devuelve **su output** | APIs que esperan resultado, validaciones, enriquecimiento sincrónico | 300s (configurable) |
+
+**Ejemplo Response Node (sync):**
+```
+Webhook → Set (validar) → IF (válido?) → HTTP Request (enriquecer) → Respond to Webhook
+                                                            │
+                                              ┌─────────────┴─────────────┐
+                                              ▼                           ▼
+                                         True (200 OK)              False (400 Bad Request)
+                                         { "status": "ok",          { "error": "invalid",
+                                           "data": {...} }             "details": [...] }
+```
+
+> ⚠️ **Advertencia:** "Si usáis **Response Node** y el workflow falla antes de llegar al nodo → el caller recibe **500/timeout**. Siempre poned **Error Trigger** → `Respond to Webhook` con error controlado."
+
+#### Seguridad de webhooks (checklist obligatorio)
+
+```yaml
+# Checklist para cada webhook en producción
+webhook_security:
+  - authentication: "HMAC-SHA256 (firma payload) O Header Token rotativo"
+  - ip_whitelist: "Solo IPs conocidas (monitoring, GitLab, etc.)"
+  - rate_limit: "n8n global + reverse proxy (nginx/traefik)"
+  - payload_validation: "Schema JSON (ajv) en primer Set node"
+  - replay_protection: "Timestamp + nonce en header, verificar ventana 5min"
+```
+
+---
+
+## 3.2 Consumo de APIs REST desde n8n
+
+### HTTP Request Node: configuración completa
+
+| Campo | Valor | Notas |
+|-------|-------|-------|
+| **Method** | `GET` / `POST` / `PUT` / `DELETE` / `PATCH` | Según API |
+| **URL** | `https://api.example.com/v1/resource` | Variables: `{{ $json.base_url }}/{{ $json.endpoint }}` |
+| **Authentication** | Header Auth / OAuth2 / Basic Auth / Query | Credenciales n8n |
+| **Headers** | `Content-Type: application/json` + custom | `Authorization: Bearer {{ $credentials.token }}` |
+| **Query Parameters** | `page=1&limit=50` | Para paginación |
+| **Body** | JSON / Form / Raw / Binary | `{{ JSON.stringify($json) }}` |
+| **Options** | Timeout: 30s, Retry: 3, Retry On: 429,5xx | Resiliencia |
+
+### Autenticación en n8n (Credentials)
+
+| Tipo | Uso | Configuración |
+|------|-----|---------------|
+| **Header Auth** | `Authorization: Bearer <token>` | Header Name: `Authorization`, Value: `Bearer {{ $credentials.token }}` |
+| **Basic Auth** | `Authorization: Basic base64(user:pass)` | User + Password |
+| **OAuth2** | Flows: Client Credentials, Authorization Code | Token URL, Client ID/Secret, Scope |
+| **API Key** | Header `X-API-Key` o Query `?api_key=` | Header Name + Value |
+
+### Paginación en APIs REST
+
+```javascript
+// En nodo Function para manejar paginación
+const allItems = [];
+let page = 1;
+const limit = 100;
+
+while (true) {
+  const response = await $httpRequest({
+    method: 'GET',
+    url: 'https://api.example.com/items',
+    qs: { page, limit },
+    headers: { Authorization: `Bearer ${$credentials.token}` }
+  });
+  
+  if (!response.data.length) break;
+  allItems.push(...response.data);
+  
+  if (response.data.length < limit) break;
+  page++;
+}
+
+return [{ json: { items: allItems } }];
+```
+
+### Manejo de errores y reintentos
+
+| Configuración | Valor recomendado | Por qué |
+|---------------|-------------------|---------|
+| **Timeout** | 30000ms (30s) | Evita bloqueos indefinidos |
+| **Retry Attempts** | 3 | Transitorios (red, 5xx) |
+| **Retry On** | `429, 500, 502, 503, 504` | Rate limit + server errors |
+| **Retry Delay** | Exponencial: 1s, 2s, 4s | Backoff exponencial |
+
+---
+
+## 3.3 Patrones de resiliencia
+
+### Circuit Breaker (simulado en n8n)
+
+```javascript
+// En nodo Function antes de HTTP Request
+const circuitBreaker = {
+  failures: 0,
+  threshold: 5,
+  timeout: 60000, // 1 min
+  lastFailure: 0,
+  state: 'CLOSED' // CLOSED | OPEN | HALF_OPEN
+};
+
+function checkCircuitBreaker() {
+  if (circuitBreaker.state === 'OPEN') {
+    if (Date.now() - circuitBreaker.lastFailure > circuitBreaker.timeout) {
+      circuitBreaker.state = 'HALF_OPEN';
+      return true; // Permitir intento
+    }
+    throw new Error('Circuit breaker OPEN - servicio no disponible');
+  }
+  return true;
+}
+
+checkCircuitBreaker();
+return [{ json: $json }];
+```
+
+### Fallback Pattern
+
+```
+HTTP Request (Primary)
+         │
+    ┌────┴────┐
+    ▼         ▼
+Success    Error
+    │         │
+    ▼         ▼
+ Continue  HTTP Request (Fallback)
+              │
+         ┌────┴────┐
+         ▼         ▼
+       Success   Error
+         │         │
+         ▼         ▼
+      Continue  Set Error + Notify
+```
+
+### Rate Limiting (Token Bucket simulado)
+
+```javascript
+// En nodo Function antes de llamada externa
+const RATE_LIMIT = 10; // req/seg
+const WINDOW_MS = 1000;
+
+if (!global.rateLimiter) {
+  global.rateLimiter = { tokens: RATE_LIMIT, lastRefill: Date.now() };
+}
+
+function refill() {
+  const now = Date.now();
+  const elapsed = now - global.rateLimiter.lastRefill;
+  const tokensToAdd = Math.floor(elapsed / WINDOW_MS) * RATE_LIMIT;
+  global.rateLimiter.tokens = Math.min(RATE_LIMIT, global.rateLimiter.tokens + tokensToAdd);
+  global.rateLimiter.lastRefill = now;
+}
+
+function refill() {
+  const now = Date.now();
+  const elapsed = now - global.rateLimiter.lastRefill;
+  const tokensToAdd = Math.floor(elapsed / WINDOW_MS) * RATE_LIMIT;
+  global.rateLimiter.tokens = Math.min(RATE_LIMIT, global.rateLimiter.tokens + tokensToAdd);
+  global.rateLimiter.lastRefill = now;
+}
+
+refill();
+
+if (global.rateLimiter.tokens >= 1) {
+  global.rateLimiter.tokens--;
+  return [{ json: $json }]; // Permitir
+} else {
+  throw new Error('Rate limit exceeded - retry later');
+}
+```
+
+---
+
+## 3.4 🧪 Lab 3.1 - Webhook Seguro para Alertas
+
+### Objetivo: Webhook `/alertas/monitoring` que recibe alertas, valida, enriquece con CMDB y responde
+
+### Paso a paso
+
+#### 1. Webhook Trigger
+- **Webhook** → Path: `/alertas/monitoring` → Method: `POST` → Response Mode: `On Received`
+- Authentication: **Header Auth** → Header: `X-Webhook-Token` → Value: `lab-token-2026`
+
+#### 2. Set - Validar y sanitizar
+- **Set** → Nombre: `Validate & Sanitize`
+- Campos:
+```javascript
+// Validar campos obligatorios
+valid: {{ !!$json.alertname && !!$json.instance && !!$json.severity }}
+
+// Normalizar
+alert_name: {{ $json.alertname }}
+host: {{ $json.instance }}
+severity_norm: {{ $json.severity.toLowerCase() }}
+is_critical: {{ $json.severity === 'critical' }}
+env: {{ $json.instance.startsWith('prod') ? 'production' : 'staging' }}
+received_at: {{ $now.toISOString() }}
+```
+
+#### 3. IF - Validar
+- **IF** → Condición: `{{ $json.valid === true }}`
+- **False** → Respond to Webhook (400): `{ "error": "Invalid payload", "missing": ["alertname", "instance", "severity"] }`
+
+#### 3. HTTP Request → CMDB Mock
+- **HTTP Request** → URL: `http://192.168.1.100:5678/webhook/cmdb`
+- Method: `POST`
+- Body:
+```json
+{
+  "instance": "{{ $json.host }}"
+}
+```
+
+#### 4. IF - Clasificar prioridad
+- **IF** → Nombre: `Priority Classification`
+- Condición: `{{ $json.is_critical && $json.env === 'production' }}`
+- **True** → Set `priority: "P1"`, `sla_minutes: 15`
+- **False** → Set `priority: "P2"`, `sla_minutes: 60`
+
+#### 5. HTTP Request → Dify Analysis (ver Módulo 6)
+- Opcional: llamar Dify para análisis IA
+
+#### 6. Respond to Webhook (sync mode)
+- **Respond to Webhook** → Status: 200
+- Body:
+```json
+{
+  "status": "accepted",
+  "alert_id": "{{ $json.alert_name }}",
+  "priority": "{{ $json.priority }}",
+  "sla_minutes": {{ $json.sla_minutes }},
+  "cmdb_enriched": {{ !$json.cmdb_error }}
+}
+```
+
+#### 7. Async: Audit + Notify (continúa en background)
+- HTTP Request → Audit Log
+- Slack/Email Notify
+
+---
+
+## 3.5 🧪 Lab 3.2 - Consumir API REST con paginación y reintentos
+
+### Objetivo: Consultar API paginada (ej. GitHub Issues) y procesar todos los items
+
+### Paso a paso
+
+#### 1. Schedule Trigger
+- **Schedule Trigger** → Every hour (o Manual para testing)
+
+#### 2. Set - Configuración inicial
+```javascript
+base_url: "https://api.github.com"
+owner: "octocat"
+repo: "Hello-World"
+per_page: 100
+page: 1
+all_issues: []
+```
+
+#### 3. Loop (Function node con while)
+```javascript
+// Function node: Fetch All Pages
+const allItems = [];
+let page = 1;
+const perPage = 100;
+const maxPages = 10; // Safety limit
+
+while (page <= maxPages) {
+  try {
+    const response = await $httpRequest({
+      method: 'GET',
+      url: 'https://api.github.com/repos/octocat/Hello-World/issues',
+      qs: { page, per_page: 100, state: 'all' },
+      headers: { 'User-Agent': 'n8n-lab', Accept: 'application/vnd.github.v3+json' },
+      timeout: 30000
+    });
+    
+    if (!response.data || response.data.length === 0) break;
+    
+    allItems.push(...response.data);
+    
+    if (response.data.length < perPage) break; // Last page
+    page++;
+    
+    // Rate limit courtesy
+    await new Promise(r => setTimeout(r, 100));
+  } catch (error) {
+    return [{ json: { error: true, message: error.message, page } }];
+  }
+}
+
+return [{ json: { issues: allItems, total: allItems.length } }];
+```
+
+#### 4. Process Items (Split in Batches + Process Each)
+- **Split In Batches** → Batch Size: 10
+- **HTTP Request** (process each) → Your processing logic
+- **Merge** → Wait mode
+
+---
+
+## 3.6 Patrones de integración comunes
+
+| Patrón | Cuándo usar | Implementación n8n |
+|--------|-------------|-------------------|
+| **Request-Response (Sync)** | Caller espera resultado | Webhook + Response Node |
+| **Fire-and-Forget (Async)** | Caller no espera | Webhook On Received |
+| **Polling** | No hay webhook disponible | Schedule + HTTP Request |
+| **Webhook + Polling Híbrido** | Webhook inicia, polling verifica estado | Webhook + Schedule + IF |
+| **Event Sourcing** | Auditoría completa | HTTP Request → Append to log/DB |
+| **Saga/Compensación** | Transacciones distribuidas | IF error → Compensating HTTP Requests |
+
+---
+
+## ✅ Checklist de fin de módulo
+
+- [ ] Configuro Webhook Trigger (sync y async)
+- [ ] Aplico seguridad: auth, validación, rate limit
+- [ ] Consumo APIs REST con paginación
+- [ ] Implemento reintentos y circuit breaker
+- [ ] Valido y sanitizo entradas antes de llamar APIs
+- [ ] Uso patrones de resiliencia: fallback, circuit breaker
+
+---
+
+> **Siguiente:** [Módulo 4: Asistentes y workflows de IA con Dify](modulo-04-asistentes-dify.md)
 
 > **Crítico para diseño de integraciones:**
 
