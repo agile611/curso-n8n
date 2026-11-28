@@ -115,6 +115,9 @@ services:
       SERVICE_API_URL: "http://${LAB_HOST:-130.117.95.60}:5001/v1"
       FILES_URL: "http://${LAB_HOST:-130.117.95.60}:5001/v1/files"
       
+      # Plugin Daemon
+      PLUGIN_DAEMON_URL: "http://dify-plugin-daemon:5003"
+      
       # Storage (local para lab)
       STORAGE_TYPE: "local"
       LOCAL_STORAGE_PATH: "/var/lib/dify/storage"
@@ -174,6 +177,52 @@ services:
       REDIS_PASSWORD: "${REDIS_PASSWORD:-redis_lab_2026}"
       REDIS_DB: "0"
       SECRET_KEY: "${DIFY_SECRET_KEY:-dify_secret_key_32_chars_minimo!!}"
+      PLUGIN_DAEMON_URL: "http://dify-plugin-daemon:5003"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - lab_net
+
+  # Plugin Daemon for Dify plugins
+  dify-plugin-daemon:
+    image: langgenius/dify-plugin-daemon:main-local
+    environment:
+      # Database
+      DB_TYPE: "postgresql"
+      DB_HOST: "postgres"
+      DB_PORT: "5432"
+      DB_USERNAME: "n8n"
+      DB_PASSWORD: "${POSTGRES_PASSWORD:-n8n_lab_2026}"
+      DB_DATABASE: "dify"
+      
+      # Redis
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: "${REDIS_PASSWORD:-redis_lab_2026}"
+      REDIS_DB: "0"
+      
+      # Config
+      SECRET_KEY: "${DIFY_SECRET_KEY:-dify_secret_key_32_chars_minimo!!}"
+      # Plugin daemon runs on port 5003
+      PLUGIN_DAEMON_PORT: "5003"
+      # Bind to all interfaces inside container
+      PLUGIN_DAEMON_HOST: "0.0.0.0"
+      
+      # Required by plugin daemon
+      SERVER_KEY: "${DIFY_SECRET_KEY:-dify_secret_key_32_chars_minimo!!}"
+      DIFY_INNER_API_URL: "http://dify-api:5001"
+      DIFY_INNER_API_KEY: "${DIFY_SECRET_KEY:-dify_secret_key_32_chars_minimo!!}"
+      # Working path
+      PLUGIN_WORKING_PATH: "/var/lib/dify/plugins"
+      
+      # Storage
+      STORAGE_TYPE: "local"
+      LOCAL_STORAGE_PATH: "/var/lib/dify/storage"
+    volumes:
+      - dify_storage:/var/lib/dify/storage
     depends_on:
       postgres:
         condition: service_healthy
